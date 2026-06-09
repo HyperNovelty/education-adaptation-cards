@@ -1,0 +1,29 @@
+---
+name: Education verification gap
+description: Report a missing learner-state, misconception, evidence, or human-review gate case.
+title: "Education verification gap: "
+labels: [education, verification]
+body:
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario
+      description: What education/learning workflow should the card system cover?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or fixture idea
+      description: What example, schema field, or negative fixture would make this verifiable?
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Safety boundaries
+      options:
+        - label: This does not require student data, LMS integration, account actions, or public classroom deployment.
+          required: true
+        - label: This preserves a human review gate before any learner-facing/public use.
+          required: true

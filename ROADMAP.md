@@ -1,0 +1,22 @@
+# Roadmap
+
+This repository explores the idea that the next classroom may be a folder: a durable workspace where mission, sources, questions, misconceptions, assessment evidence, and human review gates live in files rather than only in chat memory.
+
+## Near-term maintainer work
+
+- Strengthen schemas for learner-state, misconception tracking, assessment evidence, and review-gate outcomes.
+- Add negative fixtures that prevent cards from silently moving from draft/review states into approved learner-facing states.
+- Add examples for folder-based learning dossiers: mission, question map, lesson unit, reference sheet, practice task, evidence checklist, and review gate.
+- Keep the project local/reference-only: no student data, no LMS integration, no classroom deployment, and no account actions.
+
+## Program fit
+
+- **Codex for OSS:** Codex can help maintain fixture coverage, validator behavior, docs, and issue triage for a public education-verification schema.
+- **Codex Open Source Fund:** API credits would support expansion of open fixtures and verification examples around AI-assisted learning infrastructure.
+
+## Good first issues
+
+- Add a negative fixture for a card that lacks misconception evidence.
+- Add a folder-based learning dossier example tied to a public-domain source.
+- Add a markdown renderer that turns cards into a human-readable review packet.
+- Add schema fields for learner questions that remain unanswered or insufficiently sourced.
