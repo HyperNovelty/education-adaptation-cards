@@ -1,0 +1,138 @@
+{
+  "generated_at": "2026-06-06T00:00:00Z",
+  "safety_mode": "local_review_only",
+  "target_system": "ipublishos_agent_os_bridge",
+  "review_packet": {
+    "packet_id": "synthetic_review_packet_minimal",
+    "packet_title": "Synthetic Review Packet With Education Adaptation Cards",
+    "packet_path": "products/ipublishos_education_adaptation_cards/examples/education_cards.minimal.json",
+    "packet_status": "draft_only"
+  },
+  "education_adaptation_cards": [
+    {
+      "card_id": "teacher_card_minimal",
+      "card_type": "teacher_card",
+      "title": "Teacher Adaptation Card",
+      "audience": "teacher",
+      "grade_band": "higher_ed",
+      "purpose": "Help a teacher turn the review packet into a source-bound lesson plan without adding unsupported claims.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Do not introduce claims that are absent from the review packet source ledger."
+      },
+      "adaptation_actions": [
+        "Extract learning objectives from packet claims already tied to source IDs.",
+        "Flag any proposed classroom context that needs teacher review."
+      ],
+      "risks": [
+        {
+          "risk_id": "teacher_overgeneralization",
+          "risk_level": "medium",
+          "risk_text": "Lesson framing could overgeneralize from a draft packet.",
+          "mitigation": "Require teacher/editor approval before classroom use."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher", "editor"],
+        "review_notes": ["Local mock only; not classroom-ready."]
+      },
+      "outputs": [
+        {
+          "output_id": "lesson_plan_stub",
+          "output_type": "lesson_plan",
+          "description": "Draft-only lesson outline attached to review packet."
+        }
+      ]
+    },
+    {
+      "card_id": "student_card_minimal",
+      "card_type": "student_card",
+      "title": "Student Adaptation Card",
+      "audience": "student",
+      "grade_band": "higher_ed",
+      "purpose": "Convert the packet into student-facing prompts while preserving source limitations and uncertainty markers.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Prompts may ask questions, but cannot state new facts beyond packet sources."
+      },
+      "adaptation_actions": [
+        "Rewrite key claims as discussion questions.",
+        "Add source-check reminders for students."
+      ],
+      "risks": [
+        {
+          "risk_id": "student_false_certainty",
+          "risk_level": "medium",
+          "risk_text": "Students may treat draft packet claims as settled facts.",
+          "mitigation": "Preserve draft-only labels and include source-check questions."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher", "curriculum_reviewer"],
+        "review_notes": ["Needs age/grade appropriateness review."]
+      },
+      "outputs": [
+        {
+          "output_id": "discussion_prompt_stub",
+          "output_type": "discussion_prompt",
+          "description": "Draft-only student discussion prompts."
+        }
+      ]
+    },
+    {
+      "card_id": "assessment_gate_card_minimal",
+      "card_type": "assessment_gate_card",
+      "title": "Assessment and Gate Card",
+      "audience": "curriculum_reviewer",
+      "grade_band": "higher_ed",
+      "purpose": "Gate the teacher/student cards before they are allowed into an internal review packet release.",
+      "source_binding": {
+        "source_policy": "no_new_claims",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Fail the gate if the card contains factual claims without packet source support."
+      },
+      "adaptation_actions": [
+        "Check source coverage for every factual claim.",
+        "Check that teacher and student outputs remain draft-only."
+      ],
+      "risks": [
+        {
+          "risk_id": "gate_not_run",
+          "risk_level": "high",
+          "risk_text": "Education cards could be rendered without an explicit gate result.",
+          "mitigation": "Require this assessment_gate_card before packet integration."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["editor", "curriculum_reviewer"],
+        "review_notes": ["Gate is a mock contract; no automated pedagogical approval implied."]
+      },
+      "outputs": [
+        {
+          "output_id": "gate_report_stub",
+          "output_type": "gate_report",
+          "description": "Review-only pass/fail/needs_review report."
+        }
+      ],
+      "assessment_gates": [
+        {
+          "gate_id": "source_support_gate",
+          "gate_name": "Source support present for every claim",
+          "gate_status": "needs_review",
+          "evidence_required": ["Source ledger IDs for all factual claims", "Reviewer note for unresolved claims"]
+        },
+        {
+          "gate_id": "classroom_safety_gate",
+          "gate_name": "Draft-only classroom safety label retained",
+          "gate_status": "needs_review",
+          "evidence_required": ["Visible draft-only label", "Teacher/curriculum reviewer signoff"]
+        }
+      ]
+    }
+  ]
+}

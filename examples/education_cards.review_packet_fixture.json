@@ -1,0 +1,198 @@
+{
+  "generated_at": "2026-06-06T10:30:00Z",
+  "safety_mode": "local_review_only",
+  "target_system": "ipublishos_agent_os_bridge",
+  "review_packet": {
+    "packet_id": "voice_to_source_synthetic_packet_edu_mock",
+    "packet_title": "Synthetic Field Guide + Education Adaptation Lane",
+    "packet_path": "products/ipublishos_voice_to_source_book_builder/outputs/source_queue_stub_demo/review_packet.html",
+    "packet_status": "draft_only"
+  },
+  "education_adaptation_cards": [
+    {
+      "card_id": "teacher_card_source_locked_lesson",
+      "card_type": "teacher_card",
+      "title": "Teacher Card: Source-Locked Lesson Planner",
+      "audience": "teacher",
+      "grade_band": "adult_professional",
+      "purpose": "Create a teacher-reviewable lesson plan from an iPublishOS/Agent OS packet while preserving source ledger boundaries, uncertainty, and draft-only status.",
+      "source_binding": {
+        "source_policy": "approved_references_only",
+        "allowed_source_ids": ["S001", "S002", "C001"],
+        "blocked_claims_policy": "Only use claims already present in packet source excerpts or approved citation candidates. Unapproved candidates may appear only as review questions."
+      },
+      "adaptation_actions": [
+        "Map packet thesis, examples, and caveats into 3-5 learning objectives.",
+        "Generate a 30-minute lesson sequence with source IDs next to every factual point.",
+        "Add teacher notes for unresolved claims, terminology risks, and discussion boundaries.",
+        "Mark all generated material DRAFT_ONLY / NOT CLASSROOM-CLEARED."
+      ],
+      "risks": [
+        {
+          "risk_id": "teacher_card_unapproved_citation",
+          "risk_level": "high",
+          "risk_text": "A citation candidate that is still review-only could be used as if it were approved.",
+          "mitigation": "Renderer must preserve citation candidate status and gate unapproved candidates out of factual lesson claims."
+        },
+        {
+          "risk_id": "teacher_card_context_collapse",
+          "risk_level": "medium",
+          "risk_text": "A packet designed for product review may not include enough classroom context.",
+          "mitigation": "Require teacher notes and do not infer standards alignment unless explicitly supplied."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher", "editor", "curriculum_reviewer"],
+        "review_notes": [
+          "No standards alignment is claimed in this mock.",
+          "Teacher must confirm age/level fit before classroom use."
+        ]
+      },
+      "outputs": [
+        {
+          "output_id": "source_locked_lesson_plan",
+          "output_type": "lesson_plan",
+          "description": "A source-cited lesson sequence suitable for internal review packet rendering."
+        },
+        {
+          "output_id": "teacher_review_notes",
+          "output_type": "review_note",
+          "description": "Teacher-facing unresolved questions and classroom caveats."
+        }
+      ]
+    },
+    {
+      "card_id": "student_card_guided_source_check",
+      "card_type": "student_card",
+      "title": "Student Card: Guided Source Check",
+      "audience": "student",
+      "grade_band": "adult_professional",
+      "purpose": "Transform the packet into a student activity that teaches source checking instead of presenting draft packet output as finished authority.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001", "S002", "C001"],
+        "blocked_claims_policy": "Student-facing copy may ask learners to inspect source-backed claims; it must not introduce additional factual assertions."
+      },
+      "adaptation_actions": [
+        "Convert 3 key packet claims into source-check questions.",
+        "Ask students to label each claim as supported, partially supported, unsupported, or needs more context.",
+        "Include reflection prompts about uncertainty and draft status.",
+        "Avoid personalization, grading, or student data collection in this local mock."
+      ],
+      "risks": [
+        {
+          "risk_id": "student_card_overtrust",
+          "risk_level": "medium",
+          "risk_text": "Learners may trust generated review material without checking sources.",
+          "mitigation": "Activity centers source verification and includes explicit draft-only labels."
+        },
+        {
+          "risk_id": "student_card_privacy_scope",
+          "risk_level": "low",
+          "risk_text": "Future implementations could accidentally collect student responses.",
+          "mitigation": "This contract has no collection fields and requires local review only."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher", "curriculum_reviewer"],
+        "review_notes": [
+          "Student activity requires teacher approval before use.",
+          "No LMS/export/student account behavior is included."
+        ]
+      },
+      "outputs": [
+        {
+          "output_id": "guided_source_check_activity",
+          "output_type": "student_activity",
+          "description": "A draft-only worksheet/activity prompt bound to packet sources."
+        },
+        {
+          "output_id": "student_discussion_prompts",
+          "output_type": "discussion_prompt",
+          "description": "Questions for discussing source confidence and review status."
+        }
+      ]
+    },
+    {
+      "card_id": "assessment_gate_card_review_packet_release",
+      "card_type": "assessment_gate_card",
+      "title": "Assessment/Gate Card: Education Lane Packet Release",
+      "audience": "curriculum_reviewer",
+      "grade_band": "adult_professional",
+      "purpose": "Provide implementation gates that decide whether education cards may be rendered into an iPublishOS/Agent OS review packet.",
+      "source_binding": {
+        "source_policy": "no_new_claims",
+        "allowed_source_ids": ["S001", "S002", "C001"],
+        "blocked_claims_policy": "Gate fails if rendered teacher/student cards contain factual claims without explicit packet source IDs or if draft-only labels are missing."
+      },
+      "adaptation_actions": [
+        "Run source support review across teacher and student cards.",
+        "Run role/status review for required human reviewers.",
+        "Run safety label review for draft-only and not-classroom-cleared wording.",
+        "Emit gate report into the review packet, not into public output."
+      ],
+      "risks": [
+        {
+          "risk_id": "assessment_gate_false_pass",
+          "risk_level": "high",
+          "risk_text": "A gate result could be interpreted as automated curriculum approval.",
+          "mitigation": "Allowed statuses are review states only; human_review remains required for release."
+        },
+        {
+          "risk_id": "assessment_gate_missing_visibility",
+          "risk_level": "medium",
+          "risk_text": "Review packet renderer might hide gate results from reviewers.",
+          "mitigation": "Renderer should place gate summary near packet top-level decision area."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["editor", "curriculum_reviewer", "legal_or_policy"],
+        "review_notes": [
+          "Use this card as a blocking internal gate, not as automated approval.",
+          "Legal/policy review is required before any external or classroom distribution."
+        ]
+      },
+      "outputs": [
+        {
+          "output_id": "education_lane_gate_report",
+          "output_type": "gate_report",
+          "description": "Structured gate report for the review packet."
+        },
+        {
+          "output_id": "education_lane_rubric",
+          "output_type": "rubric",
+          "description": "Reviewer rubric for source support, grade fit, safety labeling, and role approval."
+        }
+      ],
+      "assessment_gates": [
+        {
+          "gate_id": "all_required_card_types_present",
+          "gate_name": "Teacher, student, and assessment/gate cards are all present exactly once",
+          "gate_status": "pass",
+          "evidence_required": ["One teacher_card", "One student_card", "One assessment_gate_card"]
+        },
+        {
+          "gate_id": "source_ids_preserved",
+          "gate_name": "Source IDs are preserved in education outputs",
+          "gate_status": "needs_review",
+          "evidence_required": ["Claim-to-source map", "No unsupported new factual claims"]
+        },
+        {
+          "gate_id": "human_review_roles_assigned",
+          "gate_name": "Required human review roles are explicit",
+          "gate_status": "needs_review",
+          "evidence_required": ["Teacher reviewer", "Editor reviewer", "Curriculum reviewer"]
+        },
+        {
+          "gate_id": "no_public_or_account_action",
+          "gate_name": "No publish, account, network, LMS, or student-data action is requested",
+          "gate_status": "pass",
+          "evidence_required": ["Local-only artifact paths", "No credential or account fields"]
+        }
+      ]
+    }
+  ]
+}
