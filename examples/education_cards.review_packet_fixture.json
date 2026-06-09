@@ -5,7 +5,7 @@
   "review_packet": {
     "packet_id": "voice_to_source_synthetic_packet_edu_mock",
     "packet_title": "Synthetic Field Guide + Education Adaptation Lane",
-    "packet_path": "products/ipublishos_voice_to_source_book_builder/outputs/source_queue_stub_demo/review_packet.html",
+    "packet_path": "docs/ipublishos_learning_dossier_qa_implications_2026-06-09.md",
     "packet_status": "draft_only"
   },
   "education_adaptation_cards": [

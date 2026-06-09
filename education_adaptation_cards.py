@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent
-CONTENT_ROOT = Path("/home/aware1/.hermes/content-empire").resolve()
 SCHEMA = ROOT / "schemas" / "education_adaptation_cards.schema.json"
 EXAMPLES = sorted((ROOT / "examples").glob("education_cards*.json"))
 INVALID_EXAMPLES = sorted((ROOT / "examples" / "invalid").glob("*.json"))
@@ -58,13 +57,14 @@ def require_slug(value: Any, label: str) -> None:
     require(isinstance(value, str) and SLUG_RE.match(value), f"{label} invalid slug: {value!r}")
 
 
-def assert_under_content_root(path_value: str, label: str) -> None:
+def assert_repo_local_path(path_value: str, label: str) -> None:
     p = Path(path_value)
     if not p.is_absolute():
-        p = (CONTENT_ROOT / p).resolve()
+        p = (ROOT / p).resolve()
     else:
         p = p.resolve()
-    require(p == CONTENT_ROOT or CONTENT_ROOT in p.parents, f"{label} escapes content root: {path_value}")
+    require(p == ROOT or ROOT in p.parents, f"{label} escapes repository root: {path_value}")
+    require(p.exists(), f"{label} does not exist in repository: {path_value}")
 
 
 def require_string_list(value: Any, label: str, *, min_items: int = 0) -> None:
@@ -197,7 +197,7 @@ def validate_doc(doc: Any, label: str) -> dict[str, int]:
         isinstance(packet["packet_path"], str) and packet["packet_path"].strip(),
         f"{label}.review_packet.packet_path empty",
     )
-    assert_under_content_root(packet["packet_path"], f"{label}.review_packet.packet_path")
+    assert_repo_local_path(packet["packet_path"], f"{label}.review_packet.packet_path")
     require(packet["packet_status"] in PACKET_STATUSES, f"{label}.review_packet.packet_status invalid")
 
     cards = doc["education_adaptation_cards"]

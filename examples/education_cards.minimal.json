@@ -5,7 +5,7 @@
   "review_packet": {
     "packet_id": "synthetic_review_packet_minimal",
     "packet_title": "Synthetic Review Packet With Education Adaptation Cards",
-    "packet_path": "products/ipublishos_education_adaptation_cards/examples/education_cards.minimal.json",
+    "packet_path": "examples/education_cards.minimal.json",
     "packet_status": "draft_only"
   },
   "education_adaptation_cards": [

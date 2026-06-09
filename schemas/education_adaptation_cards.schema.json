@@ -26,7 +26,7 @@
       "properties": {
         "packet_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
         "packet_title": {"type": "string", "minLength": 1},
-        "packet_path": {"type": "string", "description": "Absolute or project-relative local packet path; must stay under /home/aware1/.hermes/content-empire for this prototype."},
+        "packet_path": {"type": "string", "description": "Absolute or repo-relative local packet path that must resolve inside this repository checkout for this prototype."},
         "packet_status": {"enum": ["draft_only", "needs_human_review", "approved_for_internal_review", "rejected"]}
       }
     },

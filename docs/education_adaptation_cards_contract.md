@@ -4,7 +4,7 @@ Local-only implementation-facing mock contract for adding education adaptation c
 
 ## Boundary
 
-- Work stays under `/home/aware1/.hermes/content-empire`.
+- Work stays inside this repository checkout.
 - Artifacts are review-packet attachments, not classroom deployment artifacts.
 - No network calls, third-party package installs, public publishing, LMS/account actions, credentials, outreach, or student data handling.
 - All cards remain `draft_only` or `needs_human_review` until explicit human approval.
@@ -13,7 +13,7 @@ Local-only implementation-facing mock contract for adding education adaptation c
 
 Schema:
 
-`products/ipublishos_education_adaptation_cards/schemas/education_adaptation_cards.schema.json`
+`schemas/education_adaptation_cards.schema.json`
 
 Fixtures:
 
@@ -85,7 +85,7 @@ Boundary: this does **not** authorize LMS integration, student data collection, 
 
 ## Local verification
 
-Run from `products/ipublishos_education_adaptation_cards`:
+Run from the repository root:
 
 ```bash
 python3 -m json.tool schemas/education_adaptation_cards.schema.json >/tmp/education_adaptation_cards.schema.validated.json
@@ -94,4 +94,4 @@ python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/e
 python3 tests/validate_education_adaptation_cards.py
 ```
 
-The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, local path boundary, complete card-type set, review states, and assessment gate requirements.
+The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, review states, and assessment gate requirements.

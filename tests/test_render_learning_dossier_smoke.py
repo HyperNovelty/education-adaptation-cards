@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "render_learning_dossier.py"
 FIXTURE = ROOT / "examples" / "education_cards.minimal.json"
 
-EXPECTED_SHA256 = "4bea2bc3541f382ef13613ed222fa1dbc07dd8e7ecf27b42057a9d92b0f57a74"
+EXPECTED_SHA256 = "9196bb857e8c1e8e3f3b1b87ba9f7d0e3282a90019cd2855fd7c23a6ed9a6540"
 
 
 def main() -> int:
