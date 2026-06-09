@@ -18,5 +18,5 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 - Add a negative fixture for a card that lacks misconception evidence.
 - Add a folder-based learning dossier example tied to a public-domain source.
-- Add a markdown renderer that turns cards into a human-readable review packet.
+- Expand the markdown renderer with additional dossier sections once new fixture fields land.
 - Add schema fields for learner questions that remain unanswered or insufficiently sourced.

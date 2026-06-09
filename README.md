@@ -14,6 +14,7 @@ Local-only mock contract for attaching teacher, student, and assessment/gate edu
 - `examples/invalid/human_review_status_approved_card.json` — negative fixture proving local-review-only human review states are enforced.
 - `docs/education_adaptation_cards_contract.md` — implementation notes and review-packet integration guidance.
 - `tests/validate_education_adaptation_cards.py` — Python standard-library validator; no third-party installs.
+- `scripts/render_learning_dossier.py` — deterministic stdlib renderer for local markdown learning dossiers/review packets.
 
 ## Safety boundary
 
@@ -36,4 +37,6 @@ Run the validators with:
 
 ```bash
 python3 tests/validate_education_adaptation_cards.py
+python3 scripts/render_learning_dossier.py examples/education_cards.review_packet_fixture.json
+python3 tests/test_render_learning_dossier_smoke.py
 ```
