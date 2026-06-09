@@ -11,6 +11,7 @@ Local-only mock contract for attaching teacher, student, and assessment/gate edu
 - `schemas/education_adaptation_cards.schema.json` — documentation-facing JSON Schema contract.
 - `examples/education_cards.minimal.json` — smallest complete card lane fixture.
 - `examples/education_cards.review_packet_fixture.json` — fuller fixture referencing the existing Voice-to-Source review packet output.
+- `examples/invalid/human_review_status_approved_card.json` — negative fixture proving local-review-only human review states are enforced.
 - `docs/education_adaptation_cards_contract.md` — implementation notes and review-packet integration guidance.
 - `tests/validate_education_adaptation_cards.py` — Python standard-library validator; no third-party installs.
 

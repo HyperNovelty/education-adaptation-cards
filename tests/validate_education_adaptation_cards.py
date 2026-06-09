@@ -17,9 +17,11 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTENT_ROOT = Path("/home/aware1/.hermes/content-empire").resolve()
 SCHEMA = ROOT / "schemas" / "education_adaptation_cards.schema.json"
 EXAMPLES = sorted((ROOT / "examples").glob("education_cards*.json"))
+INVALID_EXAMPLES = sorted((ROOT / "examples" / "invalid").glob("*.json"))
 
 TARGET_SYSTEMS = {"ipublishos", "agent_os", "ipublishos_agent_os_bridge"}
 PACKET_STATUSES = {"draft_only", "needs_human_review", "approved_for_internal_review", "rejected"}
+LOCAL_REVIEW_ONLY_STATUSES = {"draft_only", "needs_human_review"}
 CARD_TYPES = {"teacher_card", "student_card", "assessment_gate_card"}
 AUDIENCES = {"teacher", "student", "reviewer", "curriculum_reviewer"}
 GRADE_BANDS = {"adult_professional", "higher_ed", "high_school", "middle_school", "elementary", "mixed", "unspecified"}
@@ -91,6 +93,10 @@ def validate_human_review(review: Any, label: str) -> None:
     require(isinstance(review, dict), f"{label} must be object")
     require(set(review) == required, f"{label} keys mismatch: {sorted(set(review))}")
     require(review["status"] in PACKET_STATUSES, f"{label}.status invalid")
+    require(
+        review["status"] in LOCAL_REVIEW_ONLY_STATUSES,
+        f"{label}.status must remain local-review-only until separate approval",
+    )
     roles = review["required_roles"]
     require(isinstance(roles, list) and roles, f"{label}.required_roles must be non-empty array")
     require(all(role in REVIEW_ROLES for role in roles), f"{label}.required_roles invalid: {roles!r}")
@@ -185,6 +191,14 @@ def validate_doc(doc: Any, label: str) -> dict[str, int]:
     return counts
 
 
+def expect_invalid_doc(path: Path) -> str:
+    try:
+        validate_doc(load_json(path), path.name)
+    except AssertionError as exc:
+        return str(exc)
+    raise AssertionError(f"{path.name} was expected to fail validation")
+
+
 def main() -> int:
     schema = load_json(SCHEMA)
     require(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "schema draft marker changed")
@@ -201,6 +215,10 @@ def main() -> int:
             f"student_card={counts['student_card']} "
             f"assessment_gate_card={counts['assessment_gate_card']}"
         )
+    for path in INVALID_EXAMPLES:
+        failure = expect_invalid_doc(path)
+        rel = path.relative_to(ROOT)
+        print(f"validated_invalid_fixture={rel} failure={failure}")
     print("validation=ok")
     return 0
 

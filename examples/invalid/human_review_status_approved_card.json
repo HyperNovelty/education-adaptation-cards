@@ -1,0 +1,129 @@
+{
+  "generated_at": "2026-06-09T00:00:00Z",
+  "safety_mode": "local_review_only",
+  "target_system": "ipublishos_agent_os_bridge",
+  "review_packet": {
+    "packet_id": "synthetic_review_packet_invalid_human_review_status",
+    "packet_title": "Invalid Fixture With Premature Approval",
+    "packet_path": "products/ipublishos_education_adaptation_cards/examples/education_cards.minimal.json",
+    "packet_status": "draft_only"
+  },
+  "education_adaptation_cards": [
+    {
+      "card_id": "teacher_card_invalid_approved_status",
+      "card_type": "teacher_card",
+      "title": "Teacher Card With Premature Approval",
+      "audience": "teacher",
+      "grade_band": "higher_ed",
+      "purpose": "Exercise the local-review-only boundary for human review states.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Do not add unsupported claims."
+      },
+      "adaptation_actions": [
+        "Preserve source boundaries."
+      ],
+      "risks": [
+        {
+          "risk_id": "teacher_premature_release",
+          "risk_level": "high",
+          "risk_text": "A fixture could claim internal approval before the separate human approval flow exists.",
+          "mitigation": "Reject approved statuses in local review fixtures."
+        }
+      ],
+      "human_review": {
+        "status": "approved_for_internal_review",
+        "required_roles": ["teacher", "editor"],
+        "review_notes": ["This status should be rejected by the validator."]
+      },
+      "outputs": [
+        {
+          "output_id": "invalid_lesson_plan_stub",
+          "output_type": "lesson_plan",
+          "description": "Draft-only lesson outline attached to review packet."
+        }
+      ]
+    },
+    {
+      "card_id": "student_card_invalid_status_control",
+      "card_type": "student_card",
+      "title": "Student Control Card",
+      "audience": "student",
+      "grade_band": "higher_ed",
+      "purpose": "Keep the invalid fixture otherwise structurally complete.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Prompts may ask questions, but cannot state new facts beyond packet sources."
+      },
+      "adaptation_actions": [
+        "Rewrite key claims as discussion questions."
+      ],
+      "risks": [
+        {
+          "risk_id": "student_false_certainty_control",
+          "risk_level": "medium",
+          "risk_text": "Students may treat draft packet claims as settled facts.",
+          "mitigation": "Preserve draft-only labels and include source-check questions."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher", "curriculum_reviewer"],
+        "review_notes": ["Control card remains valid."]
+      },
+      "outputs": [
+        {
+          "output_id": "invalid_discussion_prompt_stub",
+          "output_type": "discussion_prompt",
+          "description": "Draft-only student discussion prompts."
+        }
+      ]
+    },
+    {
+      "card_id": "assessment_gate_card_invalid_status_control",
+      "card_type": "assessment_gate_card",
+      "title": "Assessment and Gate Control Card",
+      "audience": "curriculum_reviewer",
+      "grade_band": "higher_ed",
+      "purpose": "Keep the invalid fixture otherwise structurally complete.",
+      "source_binding": {
+        "source_policy": "no_new_claims",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Fail the gate if the card contains factual claims without packet source support."
+      },
+      "adaptation_actions": [
+        "Check source coverage for every factual claim."
+      ],
+      "risks": [
+        {
+          "risk_id": "gate_not_run_control",
+          "risk_level": "high",
+          "risk_text": "Education cards could be rendered without an explicit gate result.",
+          "mitigation": "Require this assessment_gate_card before packet integration."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["editor", "curriculum_reviewer"],
+        "review_notes": ["Control card remains valid."]
+      },
+      "outputs": [
+        {
+          "output_id": "invalid_gate_report_stub",
+          "output_type": "gate_report",
+          "description": "Review-only pass/fail/needs_review report."
+        }
+      ],
+      "assessment_gates": [
+        {
+          "gate_id": "source_support_gate_invalid_fixture",
+          "gate_name": "Source support present for every claim",
+          "gate_status": "needs_review",
+          "evidence_required": ["Source ledger IDs for all factual claims"]
+        }
+      ]
+    }
+  ]
+}
