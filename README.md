@@ -9,14 +9,26 @@ JSON schema and fixtures for AI-era education adaptation cards: learner-state, a
 - `schemas/education_adaptation_cards.schema.json` — documentation-facing JSON Schema contract.
 - `examples/education_cards.minimal.json` — smallest complete card lane fixture.
 - `examples/education_cards.review_packet_fixture.json` — fuller fixture referencing the existing Voice-to-Source review packet output.
+- `examples/rendered/education_demo_dossier.md` — generated markdown demo from the review packet fixture.
 - `examples/invalid/human_review_status_approved_card.json` — negative fixture proving local-review-only human review states are enforced.
 - `docs/education_adaptation_cards_contract.md` — implementation notes and review-packet integration guidance.
+- `docs/DEMO_WALKTHROUGH.md` — plain-language reviewer walkthrough.
 - `tests/validate_education_adaptation_cards.py` — Python standard-library validator; no third-party installs.
 - `scripts/render_learning_dossier.py` — deterministic stdlib renderer for local markdown learning dossiers/review packets.
 
 ## Safety boundary
 
 This prototype is local review material only. It does not publish, contact anyone, create accounts, install packages, call networks, integrate with an LMS, or collect student data.
+
+## Try it in 2 minutes
+
+```bash
+python3 tests/validate_education_adaptation_cards.py
+python3 scripts/render_learning_dossier.py --input examples/education_cards.review_packet_fixture.json --output /tmp/education_demo_dossier.md
+sed -n '1,80p' /tmp/education_demo_dossier.md
+```
+
+For a guided review, see `docs/DEMO_WALKTHROUGH.md`.
 
 ## Verify
 

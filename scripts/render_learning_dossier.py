@@ -124,14 +124,20 @@ def render_dossier(doc: dict[str, Any], source_path: Path) -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("fixture", type=Path, help="Path to an education adaptation card JSON fixture")
+    parser.add_argument("fixture", nargs="?", type=Path, help="Path to an education adaptation card JSON fixture")
+    parser.add_argument("--input", dest="input_path", type=Path, help="Path to an education adaptation card JSON fixture")
     parser.add_argument("-o", "--output", type=Path, help="Write markdown to a file instead of stdout")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.fixture and args.input_path:
+        parser.error("use either positional fixture or --input, not both")
+    if not args.fixture and not args.input_path:
+        parser.error("provide a fixture path or --input")
+    return args
 
 
 def main() -> int:
     args = parse_args()
-    fixture = args.fixture.resolve()
+    fixture = (args.input_path or args.fixture).resolve()
     doc = load_json(fixture)
     rendered = render_dossier(doc, fixture)
     if args.output:

@@ -1,0 +1,67 @@
+# Demo Walkthrough
+
+This repository shows a small local pattern for reviewing education adaptation
+cards. It uses synthetic data only. It does not handle student data, issue
+grades, connect to an LMS, publish anything, or make compliance claims.
+
+## What to Look At First
+
+Start with `examples/education_cards.review_packet_fixture.json`. It is a fuller
+sample fixture that attaches three education cards to a draft review packet:
+
+- a teacher card for source-locked lesson planning
+- a student card for guided source checking
+- an assessment/gate card for reviewer checks before any education-facing use
+
+The fixture is deliberately labeled `local_review_only` and `draft_only`. Its
+review statuses stay at `needs_human_review`, so the sample is useful as review
+material but not as classroom approval.
+
+## What the Validator Checks
+
+Run:
+
+```bash
+python3 tests/validate_education_adaptation_cards.py
+```
+
+The validator uses only the Python standard library. It checks the project's
+current contract markers, including:
+
+- the schema is the expected draft marker
+- fixture safety mode is `local_review_only`
+- each valid fixture has exactly one teacher card, one student card, and one
+  assessment/gate card
+- human review states remain review-only
+- assessment gates are present where required
+- invalid fixtures fail for clear local-review reasons
+
+It is not a general compliance checker or curriculum approval engine.
+
+## What the Renderer Does
+
+Run:
+
+```bash
+python3 scripts/render_learning_dossier.py --input examples/education_cards.review_packet_fixture.json --output /tmp/education_demo_dossier.md
+```
+
+The renderer converts the fixture into deterministic Markdown. It preserves the
+review packet context, safety mode, card purposes, source-binding rules, risks,
+human review notes, outputs, and assessment gates.
+
+A checked-in demo render is available at
+`examples/rendered/education_demo_dossier.md`. It is generated from
+`examples/education_cards.review_packet_fixture.json` only.
+
+## How to Review in 90 Seconds
+
+1. Open the fixture and confirm it is synthetic and `local_review_only`.
+2. Run the validator and confirm both valid and invalid examples behave as
+   expected.
+3. Open the rendered dossier and confirm it says local review material only, not
+   classroom-cleared, and no LMS/network/account/publish/student-data actions are
+   authorized.
+
+That is the whole demo: a small fixture contract, a local validator, and a
+deterministic renderer for reviewer inspection.
