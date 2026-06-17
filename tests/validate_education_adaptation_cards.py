@@ -11,6 +11,11 @@ if str(ROOT) not in sys.path:
 
 from education_adaptation_cards import EXAMPLES, INVALID_EXAMPLES, SCHEMA, expect_invalid_doc, load_json, require, validate_doc
 
+EXPECTED_INVALID_FAILURES = {
+    "final_grade_without_review_card.json": "must not claim final grading authority",
+    "human_review_status_approved_card.json": "human_review.status must remain local-review-only",
+}
+
 
 def main() -> int:
     schema = load_json(SCHEMA)
@@ -31,7 +36,12 @@ def main() -> int:
     for path in INVALID_EXAMPLES:
         failure = expect_invalid_doc(path)
         rel = path.relative_to(ROOT)
+        expected = EXPECTED_INVALID_FAILURES.get(path.name)
+        if expected:
+            require(expected in failure, f"{path.name} failed for unexpected reason: {failure}")
         print(f"validated_invalid_fixture={rel} failure={failure}")
+    missing_expected = set(EXPECTED_INVALID_FAILURES) - {path.name for path in INVALID_EXAMPLES}
+    require(not missing_expected, f"missing expected invalid fixtures: {sorted(missing_expected)}")
     print("validation=ok")
     return 0
 

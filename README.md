@@ -20,6 +20,8 @@ JSON schema and fixtures for AI-era education adaptation cards: learner-state, a
 
 This prototype is local review material only. It does not publish, contact anyone, create accounts, install packages, call networks, integrate with an LMS, or collect student data.
 
+Assessment artifacts are review aids, not grading automation, diagnosis, or student surveillance; see `docs/ASSESSMENT_BOUNDARY.md`.
+
 ## Try it in 2 minutes
 
 ```bash

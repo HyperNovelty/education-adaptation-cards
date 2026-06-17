@@ -34,6 +34,16 @@ REVIEW_ROLES = {"author", "editor", "teacher", "curriculum_reviewer", "legal_or_
 OUTPUT_TYPES = {"lesson_plan", "discussion_prompt", "student_activity", "rubric", "gate_report", "review_note"}
 GATE_STATUSES = {"pass", "fail", "needs_review", "not_run"}
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_\-]{2,120}$")
+FORBIDDEN_RESPONSIBLE_USE_PATTERNS = [
+    (
+        re.compile(r"\b(assign|issue|calculate|produce)\s+(a\s+)?final\s+grade\b", re.IGNORECASE),
+        "must not claim final grading authority",
+    ),
+    (
+        re.compile(r"\b(final|automated)\s+approval\b.{0,80}\bwithout\s+human\s+review\b", re.IGNORECASE),
+        "must not claim final approval without human review",
+    ),
+]
 
 
 def load_json(path: Path) -> Any:
@@ -119,6 +129,12 @@ def validate_output(output: Any, label: str) -> None:
     require(isinstance(output["description"], str) and output["description"].strip(), f"{label}.description empty")
 
 
+def validate_responsible_use_text(card: dict[str, Any], label: str) -> None:
+    text = json.dumps(card, sort_keys=True)
+    for pattern, message in FORBIDDEN_RESPONSIBLE_USE_PATTERNS:
+        require(not pattern.search(text), f"{label} {message}: {pattern.pattern}")
+
+
 def validate_gate(gate: Any, label: str) -> None:
     required = {"gate_id", "gate_name", "gate_status", "evidence_required"}
     require(isinstance(gate, dict), f"{label} must be object")
@@ -165,6 +181,7 @@ def validate_card(card: Any, label: str) -> str:
     require(isinstance(outputs, list) and outputs, f"{label}.outputs must be non-empty array")
     for idx, output in enumerate(outputs):
         validate_output(output, f"{label}.outputs[{idx}]")
+    validate_responsible_use_text(card, label)
     gates = card.get("assessment_gates", [])
     require(isinstance(gates, list), f"{label}.assessment_gates must be array when present")
     if card_type == "assessment_gate_card":
