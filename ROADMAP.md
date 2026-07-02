@@ -4,8 +4,8 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Near-term maintainer work
 
-- Strengthen schemas for learner-state, misconception tracking, assessment evidence, and review-gate outcomes.
-- Add negative fixtures that prevent cards from silently moving from draft/review states into approved learner-facing states.
+- Strengthen schemas for learner-state beyond source-bound questions, assessment evidence, and review-gate outcomes.
+- Add more negative fixtures that prevent cards from silently moving from draft/review states into approved learner-facing states.
 - Add examples for folder-based learning dossiers: mission, question map, lesson unit, reference sheet, practice task, evidence checklist, and review gate.
 - Keep the project local/reference-only: no student data, no LMS integration, no classroom deployment, and no account actions.
 
@@ -16,7 +16,14 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Good first issues
 
-- Add a negative fixture for a card that lacks misconception evidence.
+- Add an invalid fixture for malformed learner-question statuses or misconception evidence missing source IDs.
 - Add a folder-based learning dossier example tied to a public-domain source.
-- Expand the markdown renderer with additional dossier sections once new fixture fields land.
-- Add schema fields for learner questions that remain unanswered or insufficiently sourced.
+- Add top-level dossier metadata for mission, practice task, and evidence checklist while preserving local-only boundaries.
+- Add renderer smoke expectations for learner questions and misconception evidence.
+
+## Recently completed
+
+- Added schema fields for learner questions that remain unanswered or insufficiently sourced.
+- Added misconception evidence objects with source IDs, severity, and teacher/reviewer response.
+- Added a negative fixture for a card that has learner questions without misconception evidence.
+- Expanded the markdown renderer with learner-question and misconception-evidence sections.

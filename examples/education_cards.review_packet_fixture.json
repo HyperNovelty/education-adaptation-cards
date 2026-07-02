@@ -113,6 +113,42 @@
           "output_type": "discussion_prompt",
           "description": "Questions for discussing source confidence and review status."
         }
+      ],
+      "learner_questions": [
+        {
+          "question_id": "question_claim_support",
+          "question_text": "Which claims in the packet are directly supported by S001 or S002, and which should remain review questions?",
+          "question_status": "source_bound",
+          "source_ids": ["S001", "S002"],
+          "reviewer_note": "Synthetic question for a local source-check activity; it does not store learner answers."
+        },
+        {
+          "question_id": "question_candidate_source",
+          "question_text": "Can C001 be used as evidence, or should it remain only a citation candidate?",
+          "question_status": "partially_sourced",
+          "source_ids": ["C001"],
+          "reviewer_note": "This stays unresolved until a reviewer confirms candidate-source status."
+        }
+      ],
+      "misconception_evidence": [
+        {
+          "misconception_id": "misconception_candidate_as_approved",
+          "misconception_text": "A learner may treat a citation candidate as an approved source.",
+          "evidence_signal": "The source-binding policy separates approved references from unapproved citation candidates.",
+          "source_ids": ["C001"],
+          "severity": "high",
+          "teacher_response": "Ask learners to label C001 as candidate-only and keep any claim using it as a review question.",
+          "reviewer_note": "Synthetic evidence signal for local review; no learner identity, score, or classroom action is included."
+        },
+        {
+          "misconception_id": "misconception_generated_authority",
+          "misconception_text": "A learner may assume generated review material is finished authority.",
+          "evidence_signal": "The card requires draft-only labels and source-check prompts around generated packet text.",
+          "source_ids": ["S001", "S002"],
+          "severity": "medium",
+          "teacher_response": "Keep the activity framed as source inspection and require teacher review before any classroom use.",
+          "reviewer_note": "This is a likely misconception for reviewer planning, not a record about a real learner."
+        }
       ]
     },
     {

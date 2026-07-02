@@ -33,6 +33,8 @@ RISK_LEVELS = {"low", "medium", "high", "unknown"}
 REVIEW_ROLES = {"author", "editor", "teacher", "curriculum_reviewer", "legal_or_policy"}
 OUTPUT_TYPES = {"lesson_plan", "discussion_prompt", "student_activity", "rubric", "gate_report", "review_note"}
 GATE_STATUSES = {"pass", "fail", "needs_review", "not_run"}
+QUESTION_STATUSES = {"unanswered", "partially_sourced", "source_bound", "out_of_scope"}
+MISCONCEPTION_SEVERITIES = {"low", "medium", "high", "unknown"}
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_\-]{2,120}$")
 FORBIDDEN_RESPONSIBLE_USE_PATTERNS = [
     (
@@ -42,6 +44,18 @@ FORBIDDEN_RESPONSIBLE_USE_PATTERNS = [
     (
         re.compile(r"\b(final|automated)\s+approval\b.{0,80}\bwithout\s+human\s+review\b", re.IGNORECASE),
         "must not claim final approval without human review",
+    ),
+    (
+        re.compile(r"\bdiagnos(?:e|es|ed|ing|is|tic)\b", re.IGNORECASE),
+        "must not claim diagnosis or diagnostic authority",
+    ),
+    (
+        re.compile(r"\b(student|learner)\s+surveillance\b|\bsurveil(?:lance|led|ling)?\b", re.IGNORECASE),
+        "must not claim student surveillance",
+    ),
+    (
+        re.compile(r"\b(?<!not[\s-])classroom[\s-]+cleared\b|\bapproved\s+for\s+classroom\s+use\b", re.IGNORECASE),
+        "must not claim classroom clearance",
     ),
 ]
 
@@ -129,6 +143,47 @@ def validate_output(output: Any, label: str) -> None:
     require(isinstance(output["description"], str) and output["description"].strip(), f"{label}.description empty")
 
 
+def validate_learner_question(question: Any, label: str) -> None:
+    required = {"question_id", "question_text", "question_status", "source_ids", "reviewer_note"}
+    require(isinstance(question, dict), f"{label} must be object")
+    require(set(question) == required, f"{label} keys mismatch: {sorted(set(question))}")
+    require_slug(question["question_id"], f"{label}.question_id")
+    require(isinstance(question["question_text"], str) and question["question_text"].strip(), f"{label}.question_text empty")
+    require(question["question_status"] in QUESTION_STATUSES, f"{label}.question_status invalid")
+    require_string_list(question["source_ids"], f"{label}.source_ids")
+    require(isinstance(question["reviewer_note"], str) and question["reviewer_note"].strip(), f"{label}.reviewer_note empty")
+
+
+def validate_misconception_evidence(evidence: Any, label: str) -> None:
+    required = {
+        "misconception_id",
+        "misconception_text",
+        "evidence_signal",
+        "source_ids",
+        "severity",
+        "teacher_response",
+        "reviewer_note",
+    }
+    require(isinstance(evidence, dict), f"{label} must be object")
+    require(set(evidence) == required, f"{label} keys mismatch: {sorted(set(evidence))}")
+    require_slug(evidence["misconception_id"], f"{label}.misconception_id")
+    require(
+        isinstance(evidence["misconception_text"], str) and evidence["misconception_text"].strip(),
+        f"{label}.misconception_text empty",
+    )
+    require(
+        isinstance(evidence["evidence_signal"], str) and evidence["evidence_signal"].strip(),
+        f"{label}.evidence_signal empty",
+    )
+    require_string_list(evidence["source_ids"], f"{label}.source_ids", min_items=1)
+    require(evidence["severity"] in MISCONCEPTION_SEVERITIES, f"{label}.severity invalid")
+    require(
+        isinstance(evidence["teacher_response"], str) and evidence["teacher_response"].strip(),
+        f"{label}.teacher_response empty",
+    )
+    require(isinstance(evidence["reviewer_note"], str) and evidence["reviewer_note"].strip(), f"{label}.reviewer_note empty")
+
+
 def validate_responsible_use_text(card: dict[str, Any], label: str) -> None:
     text = json.dumps(card, sort_keys=True)
     for pattern, message in FORBIDDEN_RESPONSIBLE_USE_PATTERNS:
@@ -158,7 +213,7 @@ def validate_card(card: Any, label: str) -> str:
         "human_review",
         "outputs",
     }
-    allowed = required | {"grade_band", "assessment_gates"}
+    allowed = required | {"grade_band", "learner_questions", "misconception_evidence", "assessment_gates"}
     require(isinstance(card, dict), f"{label} must be object")
     require(required.issubset(card), f"{label} missing required keys: {sorted(required - set(card))}")
     require(set(card).issubset(allowed), f"{label} has unexpected keys: {sorted(set(card) - allowed)}")
@@ -181,6 +236,18 @@ def validate_card(card: Any, label: str) -> str:
     require(isinstance(outputs, list) and outputs, f"{label}.outputs must be non-empty array")
     for idx, output in enumerate(outputs):
         validate_output(output, f"{label}.outputs[{idx}]")
+    learner_questions = card.get("learner_questions", [])
+    require(isinstance(learner_questions, list), f"{label}.learner_questions must be array when present")
+    for idx, question in enumerate(learner_questions):
+        validate_learner_question(question, f"{label}.learner_questions[{idx}]")
+    misconception_evidence = card.get("misconception_evidence", [])
+    require(isinstance(misconception_evidence, list), f"{label}.misconception_evidence must be array when present")
+    for idx, evidence in enumerate(misconception_evidence):
+        validate_misconception_evidence(evidence, f"{label}.misconception_evidence[{idx}]")
+    require(
+        not learner_questions or misconception_evidence,
+        f"{label}.misconception_evidence required when learner_questions are present",
+    )
     validate_responsible_use_text(card, label)
     gates = card.get("assessment_gates", [])
     require(isinstance(gates, list), f"{label}.assessment_gates must be array when present")
@@ -216,6 +283,10 @@ def validate_doc(doc: Any, label: str) -> dict[str, int]:
     )
     assert_repo_local_path(packet["packet_path"], f"{label}.review_packet.packet_path")
     require(packet["packet_status"] in PACKET_STATUSES, f"{label}.review_packet.packet_status invalid")
+    require(
+        packet["packet_status"] in LOCAL_REVIEW_ONLY_STATUSES,
+        f"{label}.review_packet.packet_status must remain local-review-only until separate approval",
+    )
 
     cards = doc["education_adaptation_cards"]
     require(isinstance(cards, list), f"{label}.education_adaptation_cards must be array")

@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-07-02T00:00:00Z",
+  "safety_mode": "local_review_only",
+  "target_system": "ipublishos_agent_os_bridge",
+  "review_packet": {
+    "packet_id": "invalid_questions_without_evidence",
+    "packet_title": "Invalid Learner Questions Without Evidence",
+    "packet_path": "examples/education_cards.minimal.json",
+    "packet_status": "draft_only"
+  },
+  "education_adaptation_cards": [
+    {
+      "card_id": "teacher_card_invalid_questions",
+      "card_type": "teacher_card",
+      "title": "Teacher Card With Unsupported Questions",
+      "audience": "teacher",
+      "grade_band": "higher_ed",
+      "purpose": "Show that learner questions cannot be added without misconception evidence.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Do not introduce claims outside packet sources."
+      },
+      "adaptation_actions": ["Review source-bound questions."],
+      "risks": [
+        {
+          "risk_id": "missing_evidence",
+          "risk_level": "high",
+          "risk_text": "Question prompts could imply a learner issue without an evidence record.",
+          "mitigation": "Require misconception evidence with source IDs and teacher response."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher"],
+        "review_notes": ["Invalid fixture should fail before rendering."]
+      },
+      "outputs": [
+        {
+          "output_id": "invalid_question_output",
+          "output_type": "review_note",
+          "description": "Invalid local review note."
+        }
+      ],
+      "learner_questions": [
+        {
+          "question_id": "question_without_evidence",
+          "question_text": "Which claim needs a clearer source check?",
+          "question_status": "unanswered",
+          "source_ids": ["S001"],
+          "reviewer_note": "This question intentionally lacks required misconception evidence."
+        }
+      ]
+    },
+    {
+      "card_id": "student_card_invalid_questions",
+      "card_type": "student_card",
+      "title": "Student Card Placeholder",
+      "audience": "student",
+      "grade_band": "higher_ed",
+      "purpose": "Complete the lane shape for the invalid fixture.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Do not introduce claims outside packet sources."
+      },
+      "adaptation_actions": ["Keep all prompts draft-only."],
+      "risks": [],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher"],
+        "review_notes": ["Placeholder card."]
+      },
+      "outputs": [
+        {
+          "output_id": "student_placeholder_output",
+          "output_type": "discussion_prompt",
+          "description": "Placeholder prompt."
+        }
+      ]
+    },
+    {
+      "card_id": "assessment_gate_card_invalid_questions",
+      "card_type": "assessment_gate_card",
+      "title": "Assessment Gate Placeholder",
+      "audience": "curriculum_reviewer",
+      "grade_band": "higher_ed",
+      "purpose": "Complete the lane shape for the invalid fixture.",
+      "source_binding": {
+        "source_policy": "no_new_claims",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Do not introduce claims outside packet sources."
+      },
+      "adaptation_actions": ["Require evidence for learner questions."],
+      "risks": [],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["curriculum_reviewer"],
+        "review_notes": ["Placeholder gate."]
+      },
+      "outputs": [
+        {
+          "output_id": "gate_placeholder_output",
+          "output_type": "gate_report",
+          "description": "Placeholder gate report."
+        }
+      ],
+      "assessment_gates": [
+        {
+          "gate_id": "misconception_evidence_gate",
+          "gate_name": "Learner questions have misconception evidence",
+          "gate_status": "fail",
+          "evidence_required": ["Misconception evidence item", "Teacher response", "Source IDs"]
+        }
+      ]
+    }
+  ]
+}

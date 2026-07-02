@@ -46,6 +46,8 @@
         "risks": {"type": "array", "items": {"$ref": "#/$defs/risk"}},
         "human_review": {"$ref": "#/$defs/human_review"},
         "outputs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/output_ref"}},
+        "learner_questions": {"type": "array", "items": {"$ref": "#/$defs/learner_question"}, "description": "Optional local-only learner questions that remain source-bound and unresolved until teacher/reviewer review."},
+        "misconception_evidence": {"type": "array", "items": {"$ref": "#/$defs/misconception_evidence"}, "description": "Optional local-only evidence records for likely misconception signals and teacher/reviewer response."},
         "assessment_gates": {"type": "array", "items": {"$ref": "#/$defs/assessment_gate"}, "description": "Required when card_type is assessment_gate_card."}
       }
     },
@@ -88,6 +90,32 @@
         "output_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
         "output_type": {"enum": ["lesson_plan", "discussion_prompt", "student_activity", "rubric", "gate_report", "review_note"]},
         "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "learner_question": {
+      "type": "object",
+      "required": ["question_id", "question_text", "question_status", "source_ids", "reviewer_note"],
+      "additionalProperties": false,
+      "properties": {
+        "question_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
+        "question_text": {"type": "string", "minLength": 1},
+        "question_status": {"enum": ["unanswered", "partially_sourced", "source_bound", "out_of_scope"]},
+        "source_ids": {"type": "array", "items": {"type": "string"}},
+        "reviewer_note": {"type": "string", "minLength": 1}
+      }
+    },
+    "misconception_evidence": {
+      "type": "object",
+      "required": ["misconception_id", "misconception_text", "evidence_signal", "source_ids", "severity", "teacher_response", "reviewer_note"],
+      "additionalProperties": false,
+      "properties": {
+        "misconception_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
+        "misconception_text": {"type": "string", "minLength": 1},
+        "evidence_signal": {"type": "string", "minLength": 1},
+        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "severity": {"enum": ["low", "medium", "high", "unknown"]},
+        "teacher_response": {"type": "string", "minLength": 1},
+        "reviewer_note": {"type": "string", "minLength": 1}
       }
     },
     "assessment_gate": {

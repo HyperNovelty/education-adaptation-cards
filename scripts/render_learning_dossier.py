@@ -75,6 +75,31 @@ def render_card(card: dict[str, Any]) -> list[str]:
     )
     for output in card["outputs"]:
         lines.append(f"- `{output['output_id']}` [{output['output_type']}]: {output['description']}")
+    learner_questions = card.get("learner_questions", [])
+    if learner_questions:
+        lines.extend(["", "### Learner Questions", ""])
+        for question in learner_questions:
+            source_ids = ", ".join(question["source_ids"]) or "none"
+            lines.extend(
+                [
+                    f"- `{question['question_id']}` [{question['question_status']}]: {question['question_text']}",
+                    f"  Source IDs: {source_ids}",
+                    f"  Reviewer note: {question['reviewer_note']}",
+                ]
+            )
+    misconception_evidence = card.get("misconception_evidence", [])
+    if misconception_evidence:
+        lines.extend(["", "### Misconception Evidence", ""])
+        for evidence in misconception_evidence:
+            lines.extend(
+                [
+                    f"- `{evidence['misconception_id']}` [{evidence['severity']}]: {evidence['misconception_text']}",
+                    f"  Evidence signal: {evidence['evidence_signal']}",
+                    f"  Source IDs: {', '.join(evidence['source_ids'])}",
+                    f"  Teacher response: {evidence['teacher_response']}",
+                    f"  Reviewer note: {evidence['reviewer_note']}",
+                ]
+            )
     gates = card.get("assessment_gates", [])
     if gates:
         lines.extend(["", "### Assessment Gates", ""])

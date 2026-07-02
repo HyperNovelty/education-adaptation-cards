@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "render_learning_dossier.py"
 FIXTURE = ROOT / "examples" / "education_cards.minimal.json"
 
-EXPECTED_SHA256 = "9196bb857e8c1e8e3f3b1b87ba9f7d0e3282a90019cd2855fd7c23a6ed9a6540"
+EXPECTED_SHA256 = "44a52d62e1f7c133ffaa14d06d9b75d7db302a8504c26a9f86af81d377b6a792"
 
 
 def main() -> int:
@@ -27,6 +27,8 @@ def main() -> int:
     assert "Teacher Adaptation Card" in rendered
     assert "Student Adaptation Card" in rendered
     assert "Assessment and Gate Card" in rendered
+    assert "### Learner Questions" in rendered
+    assert "### Misconception Evidence" in rendered
     assert "Local review material only. Not classroom-cleared." in rendered
     digest = hashlib.sha256(rendered.encode("utf-8")).hexdigest()
     assert digest == EXPECTED_SHA256, digest

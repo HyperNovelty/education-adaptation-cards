@@ -2,7 +2,7 @@
 
 Local-only mock contract for attaching teacher, student, and assessment/gate education adaptation cards to iPublishOS / Agent OS review packets.
 
-JSON schema and fixtures for AI-era education adaptation cards: learner-state, assessment evidence, misconception tracking, and human review gates.
+JSON schema and fixtures for AI-era education adaptation cards: source-bound learner questions, misconception evidence, assessment gates, and human review.
 
 ## Included
 
@@ -11,6 +11,7 @@ JSON schema and fixtures for AI-era education adaptation cards: learner-state, a
 - `examples/education_cards.review_packet_fixture.json` — fuller fixture referencing the existing Voice-to-Source review packet output.
 - `examples/rendered/education_demo_dossier.md` — generated markdown demo from the review packet fixture.
 - `examples/invalid/human_review_status_approved_card.json` — negative fixture proving local-review-only human review states are enforced.
+- `examples/invalid/learner_questions_without_misconception_evidence.json` — negative fixture proving learner questions require misconception evidence.
 - `docs/education_adaptation_cards_contract.md` — implementation notes and review-packet integration guidance.
 - `docs/DEMO_WALKTHROUGH.md` — plain-language reviewer walkthrough.
 - `tests/validate_education_adaptation_cards.py` — Python standard-library validator; no third-party installs.
@@ -21,6 +22,8 @@ JSON schema and fixtures for AI-era education adaptation cards: learner-state, a
 This prototype is local review material only. It does not publish, contact anyone, create accounts, install packages, call networks, integrate with an LMS, or collect student data.
 
 Assessment artifacts are review aids, not grading automation, diagnosis, or student surveillance; see `docs/ASSESSMENT_BOUNDARY.md`.
+
+Learner questions and misconception evidence are synthetic, source-bound review objects. They are not student records, learner profiles, grading inputs, or classroom-clearance claims.
 
 ## Try it in 2 minutes
 

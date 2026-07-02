@@ -107,6 +107,28 @@ Transform the packet into a student activity that teaches source checking instea
 - `guided_source_check_activity` [student_activity]: A draft-only worksheet/activity prompt bound to packet sources.
 - `student_discussion_prompts` [discussion_prompt]: Questions for discussing source confidence and review status.
 
+### Learner Questions
+
+- `question_claim_support` [source_bound]: Which claims in the packet are directly supported by S001 or S002, and which should remain review questions?
+  Source IDs: S001, S002
+  Reviewer note: Synthetic question for a local source-check activity; it does not store learner answers.
+- `question_candidate_source` [partially_sourced]: Can C001 be used as evidence, or should it remain only a citation candidate?
+  Source IDs: C001
+  Reviewer note: This stays unresolved until a reviewer confirms candidate-source status.
+
+### Misconception Evidence
+
+- `misconception_candidate_as_approved` [high]: A learner may treat a citation candidate as an approved source.
+  Evidence signal: The source-binding policy separates approved references from unapproved citation candidates.
+  Source IDs: C001
+  Teacher response: Ask learners to label C001 as candidate-only and keep any claim using it as a review question.
+  Reviewer note: Synthetic evidence signal for local review; no learner identity, score, or classroom action is included.
+- `misconception_generated_authority` [medium]: A learner may assume generated review material is finished authority.
+  Evidence signal: The card requires draft-only labels and source-check prompts around generated packet text.
+  Source IDs: S001, S002
+  Teacher response: Keep the activity framed as source inspection and require teacher review before any classroom use.
+  Reviewer note: This is a likely misconception for reviewer planning, not a record about a real learner.
+
 ## Assessment/Gate Card: Education Lane Packet Release
 
 - Card ID: `assessment_gate_card_review_packet_release`

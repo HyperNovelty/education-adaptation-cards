@@ -14,6 +14,7 @@ from education_adaptation_cards import EXAMPLES, INVALID_EXAMPLES, SCHEMA, expec
 EXPECTED_INVALID_FAILURES = {
     "final_grade_without_review_card.json": "must not claim final grading authority",
     "human_review_status_approved_card.json": "human_review.status must remain local-review-only",
+    "learner_questions_without_misconception_evidence.json": "misconception_evidence required when learner_questions are present",
 }
 
 

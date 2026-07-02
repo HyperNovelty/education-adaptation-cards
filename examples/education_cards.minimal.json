@@ -81,6 +81,26 @@
           "output_type": "discussion_prompt",
           "description": "Draft-only student discussion prompts."
         }
+      ],
+      "learner_questions": [
+        {
+          "question_id": "question_source_confidence",
+          "question_text": "Which packet claim has enough source support for discussion, and which claim needs more review?",
+          "question_status": "partially_sourced",
+          "source_ids": ["S001"],
+          "reviewer_note": "Synthetic local-review question; no learner response or identity is recorded."
+        }
+      ],
+      "misconception_evidence": [
+        {
+          "misconception_id": "misconception_draft_as_fact",
+          "misconception_text": "A learner may treat a draft packet claim as a settled fact.",
+          "evidence_signal": "The activity asks learners to compare a supported claim with a claim that still needs review.",
+          "source_ids": ["S001"],
+          "severity": "medium",
+          "teacher_response": "Have the teacher mark draft claims as unresolved and ask for source checks before discussion.",
+          "reviewer_note": "Evidence is synthetic and source-bound; it is not an evaluation or student record."
+        }
       ]
     },
     {

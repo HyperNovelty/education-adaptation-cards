@@ -47,7 +47,31 @@ Required card fields:
 | `risks` | Known failure modes and mitigations. |
 | `human_review` | Review status, required roles, and notes. |
 | `outputs` | Intended review-packet output sections. |
+| `learner_questions` | Optional source-bound learner questions for local review. If present, the card must also include `misconception_evidence`. |
+| `misconception_evidence` | Optional evidence signals for likely misconceptions, with source IDs, severity, teacher response, and reviewer note. Required when `learner_questions` is present. |
 | `assessment_gates` | Required for `assessment_gate_card`; omitted or empty for ordinary teacher/student cards. |
+
+Learner question fields:
+
+| Field | Meaning |
+| --- | --- |
+| `question_id` | Stable local slug. |
+| `question_text` | Reviewer-facing unresolved or source-check question. |
+| `question_status` | `unanswered`, `partially_sourced`, `source_bound`, or `out_of_scope`. |
+| `source_ids` | Packet source IDs that bound the question; may be empty for unanswered or out-of-scope questions. |
+| `reviewer_note` | Local reviewer note. Do not include learner identity or student data. |
+
+Misconception evidence fields:
+
+| Field | Meaning |
+| --- | --- |
+| `misconception_id` | Stable local slug. |
+| `misconception_text` | Likely misconception phrased for teacher/reviewer planning, not a finding about a real learner. |
+| `evidence_signal` | Source-bound signal that explains why the misconception should be reviewed. |
+| `source_ids` | One or more packet source IDs supporting the evidence signal. |
+| `severity` | `low`, `medium`, `high`, or `unknown`. |
+| `teacher_response` | Suggested teacher/reviewer response. |
+| `reviewer_note` | Local reviewer note. Do not include learner identity or student data. |
 
 ## Suggested renderer integration
 
@@ -70,11 +94,12 @@ Recommended future card type or companion object:
 
 - `learning_dossier_card` or `proof_of_learning_card`
 
-Required verification concepts for that future card:
+Supported verification concepts:
 
 - learner mission / why this lesson exists;
 - source-to-lesson trace;
-- likely misconceptions;
+- learner questions;
+- likely misconceptions with evidence signals;
 - practice task;
 - expected evidence;
 - rubric / competence level;
@@ -94,4 +119,4 @@ python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/e
 python3 tests/validate_education_adaptation_cards.py
 ```
 
-The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, review states, and assessment gate requirements.
+The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, blocked public-safety claims, and assessment gate requirements.
