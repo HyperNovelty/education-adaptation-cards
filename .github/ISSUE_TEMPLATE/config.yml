@@ -1,5 +1,5 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: Safety boundary question
-    url: https://github.com/HyperNovelty/education-adaptation-cards
-    about: Open an issue if an education card could be mistaken for deployment approval or student-data collection.
+  - name: Security policy
+    url: ../security/policy
+    about: Please do not open public issues for sensitive security reports.

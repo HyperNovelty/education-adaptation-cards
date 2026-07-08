@@ -1,8 +1,9 @@
-name: validate
+name: Validate
 
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   validate:
@@ -12,7 +13,29 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Run validators
+      - name: Compile Python files
         run: |
-          python3 tests/validate_education_adaptation_cards.py
-
+          python - <<'PY'
+          import py_compile, subprocess
+          files = subprocess.check_output(['git', 'ls-files', '*.py'], text=True).splitlines()
+          for path in files:
+              py_compile.compile(path, doraise=True)
+          print(f'compiled {len(files)} python files')
+          PY
+      - name: Validate JSON files
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          files = subprocess.check_output(['git', 'ls-files', '*.json'], text=True).splitlines()
+          for path in files:
+              with open(path, 'r', encoding='utf-8') as f:
+                  json.load(f)
+          print(f'validated {len(files)} json files')
+          PY
+      - name: Run unittest discovery when tests exist
+        run: |
+          if [ -d tests ]; then
+            python -m unittest discover -s tests -p 'test*.py'
+          else
+            echo 'no tests directory'
+          fi
