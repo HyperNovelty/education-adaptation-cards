@@ -35,6 +35,7 @@ OUTPUT_TYPES = {"lesson_plan", "discussion_prompt", "student_activity", "rubric"
 GATE_STATUSES = {"pass", "fail", "needs_review", "not_run"}
 QUESTION_STATUSES = {"unanswered", "partially_sourced", "source_bound", "out_of_scope"}
 MISCONCEPTION_SEVERITIES = {"low", "medium", "high", "unknown"}
+PUBLIC_DOMAIN_STATUSES = {"pre_1929_public_domain_us", "us_federal_government_work"}
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_\-]{2,120}$")
 FORBIDDEN_RESPONSIBLE_USE_PATTERNS = [
     (
@@ -184,10 +185,16 @@ def validate_misconception_evidence(evidence: Any, label: str) -> None:
     require(isinstance(evidence["reviewer_note"], str) and evidence["reviewer_note"].strip(), f"{label}.reviewer_note empty")
 
 
-def validate_responsible_use_text(card: dict[str, Any], label: str) -> None:
-    text = json.dumps(card, sort_keys=True)
-    for pattern, message in FORBIDDEN_RESPONSIBLE_USE_PATTERNS:
-        require(not pattern.search(text), f"{label} {message}: {pattern.pattern}")
+def validate_responsible_use_text(value: Any, label: str) -> None:
+    if isinstance(value, str):
+        for pattern, message in FORBIDDEN_RESPONSIBLE_USE_PATTERNS:
+            require(not pattern.search(value), f"{label} {message}: {pattern.pattern}")
+    elif isinstance(value, list):
+        for idx, item in enumerate(value):
+            validate_responsible_use_text(item, f"{label}[{idx}]")
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            validate_responsible_use_text(item, f"{label}.{key}")
 
 
 def validate_gate(gate: Any, label: str) -> None:
@@ -198,6 +205,131 @@ def validate_gate(gate: Any, label: str) -> None:
     require(isinstance(gate["gate_name"], str) and gate["gate_name"].strip(), f"{label}.gate_name empty")
     require(gate["gate_status"] in GATE_STATUSES, f"{label}.gate_status invalid")
     require_string_list(gate["evidence_required"], f"{label}.evidence_required", min_items=1)
+
+
+def validate_learning_dossier(dossier: Any, label: str) -> None:
+    required = {
+        "dossier_id",
+        "dossier_title",
+        "folder_layout",
+        "learning_mission",
+        "source_reference_sheet",
+        "question_map",
+        "practice_task",
+        "evidence_checklist",
+        "review_gate",
+    }
+    require(isinstance(dossier, dict), f"{label} must be object")
+    require(set(dossier) == required, f"{label} keys mismatch: {sorted(set(dossier))}")
+    require_slug(dossier["dossier_id"], f"{label}.dossier_id")
+    require(isinstance(dossier["dossier_title"], str) and dossier["dossier_title"].strip(), f"{label}.dossier_title empty")
+    require_string_list(dossier["folder_layout"], f"{label}.folder_layout", min_items=1)
+
+    mission = dossier["learning_mission"]
+    mission_required = {"mission_id", "audience", "objective", "review_state"}
+    require(isinstance(mission, dict), f"{label}.learning_mission must be object")
+    require(set(mission) == mission_required, f"{label}.learning_mission keys mismatch: {sorted(set(mission))}")
+    require_slug(mission["mission_id"], f"{label}.learning_mission.mission_id")
+    require(isinstance(mission["audience"], str) and mission["audience"].strip(), f"{label}.learning_mission.audience empty")
+    require(isinstance(mission["objective"], str) and mission["objective"].strip(), f"{label}.learning_mission.objective empty")
+    require(
+        mission["review_state"] in LOCAL_REVIEW_ONLY_STATUSES,
+        f"{label}.learning_mission.review_state must remain local-review-only",
+    )
+
+    sources = dossier["source_reference_sheet"]
+    require(isinstance(sources, list) and sources, f"{label}.source_reference_sheet must be non-empty array")
+    source_ids: set[str] = set()
+    source_required = {
+        "source_id",
+        "title",
+        "creator",
+        "publication_year",
+        "public_domain_status",
+        "public_domain_basis",
+        "url",
+        "excerpt",
+    }
+    for idx, source in enumerate(sources):
+        source_label = f"{label}.source_reference_sheet[{idx}]"
+        require(isinstance(source, dict), f"{source_label} must be object")
+        require(set(source) == source_required, f"{source_label} keys mismatch: {sorted(set(source))}")
+        require(isinstance(source["source_id"], str) and source["source_id"].strip(), f"{source_label}.source_id empty")
+        require(source["source_id"] not in source_ids, f"{source_label}.source_id duplicate: {source['source_id']}")
+        source_ids.add(source["source_id"])
+        require(isinstance(source["title"], str) and source["title"].strip(), f"{source_label}.title empty")
+        require(isinstance(source["creator"], str) and source["creator"].strip(), f"{source_label}.creator empty")
+        require(isinstance(source["publication_year"], int), f"{source_label}.publication_year must be integer")
+        require(source["public_domain_status"] in PUBLIC_DOMAIN_STATUSES, f"{source_label}.public_domain_status invalid")
+        require(
+            source["public_domain_status"] != "pre_1929_public_domain_us" or source["publication_year"] <= 1928,
+            f"{source_label}.public_domain_status pre_1929_public_domain_us requires publication_year <= 1928",
+        )
+        require(
+            isinstance(source["public_domain_basis"], str) and source["public_domain_basis"].strip(),
+            f"{source_label}.public_domain_basis empty",
+        )
+        require(isinstance(source["url"], str) and source["url"].startswith("https://"), f"{source_label}.url must be https URL")
+        require(
+            isinstance(source["excerpt"], str) and 0 < len(source["excerpt"]) <= 500,
+            f"{source_label}.excerpt must be 1-500 characters",
+        )
+
+    questions = dossier["question_map"]
+    require(isinstance(questions, list) and questions, f"{label}.question_map must be non-empty array")
+    question_required = {"question_id", "question", "source_ids", "reviewer_note"}
+    for idx, question in enumerate(questions):
+        question_label = f"{label}.question_map[{idx}]"
+        require(isinstance(question, dict), f"{question_label} must be object")
+        require(set(question) == question_required, f"{question_label} keys mismatch: {sorted(set(question))}")
+        require_slug(question["question_id"], f"{question_label}.question_id")
+        require(isinstance(question["question"], str) and question["question"].strip(), f"{question_label}.question empty")
+        require_string_list(question["source_ids"], f"{question_label}.source_ids", min_items=1)
+        require(set(question["source_ids"]).issubset(source_ids), f"{question_label}.source_ids unknown source")
+        require(isinstance(question["reviewer_note"], str) and question["reviewer_note"].strip(), f"{question_label}.reviewer_note empty")
+
+    evidence = dossier["evidence_checklist"]
+    require(isinstance(evidence, list) and evidence, f"{label}.evidence_checklist must be non-empty array")
+    evidence_ids: set[str] = set()
+    evidence_required = {"evidence_id", "evidence_item", "source_ids", "reviewer_note"}
+    for idx, item in enumerate(evidence):
+        item_label = f"{label}.evidence_checklist[{idx}]"
+        require(isinstance(item, dict), f"{item_label} must be object")
+        require(set(item) == evidence_required, f"{item_label} keys mismatch: {sorted(set(item))}")
+        require_slug(item["evidence_id"], f"{item_label}.evidence_id")
+        require(item["evidence_id"] not in evidence_ids, f"{item_label}.evidence_id duplicate: {item['evidence_id']}")
+        evidence_ids.add(item["evidence_id"])
+        require(isinstance(item["evidence_item"], str) and item["evidence_item"].strip(), f"{item_label}.evidence_item empty")
+        require_string_list(item["source_ids"], f"{item_label}.source_ids", min_items=1)
+        require(set(item["source_ids"]).issubset(source_ids), f"{item_label}.source_ids unknown source")
+        require(isinstance(item["reviewer_note"], str) and item["reviewer_note"].strip(), f"{item_label}.reviewer_note empty")
+
+    task = dossier["practice_task"]
+    task_required = {"task_id", "prompt", "source_ids", "evidence_output_ids", "reviewer_note"}
+    require(isinstance(task, dict), f"{label}.practice_task must be object")
+    require(set(task) == task_required, f"{label}.practice_task keys mismatch: {sorted(set(task))}")
+    require_slug(task["task_id"], f"{label}.practice_task.task_id")
+    require(isinstance(task["prompt"], str) and task["prompt"].strip(), f"{label}.practice_task.prompt empty")
+    require_string_list(task["source_ids"], f"{label}.practice_task.source_ids", min_items=1)
+    require(set(task["source_ids"]).issubset(source_ids), f"{label}.practice_task.source_ids unknown source")
+    require_string_list(task["evidence_output_ids"], f"{label}.practice_task.evidence_output_ids", min_items=1)
+    require(
+        set(task["evidence_output_ids"]).issubset(evidence_ids),
+        f"{label}.practice_task.evidence_output_ids unknown evidence",
+    )
+    require(isinstance(task["reviewer_note"], str) and task["reviewer_note"].strip(), f"{label}.practice_task.reviewer_note empty")
+
+    gate = dossier["review_gate"]
+    gate_required = {"gate_id", "status", "required_roles", "evidence_required_ids", "reviewer_note"}
+    require(isinstance(gate, dict), f"{label}.review_gate must be object")
+    require(set(gate) == gate_required, f"{label}.review_gate keys mismatch: {sorted(set(gate))}")
+    require_slug(gate["gate_id"], f"{label}.review_gate.gate_id")
+    require(gate["status"] in LOCAL_REVIEW_ONLY_STATUSES, f"{label}.review_gate.status must remain local-review-only")
+    require_string_list(gate["required_roles"], f"{label}.review_gate.required_roles", min_items=1)
+    require(all(role in REVIEW_ROLES for role in gate["required_roles"]), f"{label}.review_gate.required_roles invalid")
+    require_string_list(gate["evidence_required_ids"], f"{label}.review_gate.evidence_required_ids", min_items=1)
+    require(set(gate["evidence_required_ids"]).issubset(evidence_ids), f"{label}.review_gate.evidence_required_ids unknown evidence")
+    require(isinstance(gate["reviewer_note"], str) and gate["reviewer_note"].strip(), f"{label}.review_gate.reviewer_note empty")
 
 
 def validate_card(card: Any, label: str) -> str:
@@ -263,7 +395,9 @@ def validate_card(card: Any, label: str) -> str:
 def validate_doc(doc: Any, label: str) -> dict[str, int]:
     required = {"generated_at", "safety_mode", "target_system", "review_packet", "education_adaptation_cards"}
     require(isinstance(doc, dict), f"{label} must be object")
-    require(set(doc) == required, f"{label} top-level keys mismatch: {sorted(set(doc))}")
+    require(required.issubset(doc), f"{label} missing top-level keys: {sorted(required - set(doc))}")
+    require(set(doc).issubset(required | {"learning_dossier"}), f"{label} top-level keys mismatch: {sorted(set(doc))}")
+    validate_responsible_use_text(doc, label)
     parse_timestamp(doc["generated_at"], label)
     require(doc["safety_mode"] == "local_review_only", f"{label}.safety_mode must be local_review_only")
     require(doc["target_system"] in TARGET_SYSTEMS, f"{label}.target_system invalid")
@@ -303,6 +437,8 @@ def validate_doc(doc: Any, label: str) -> dict[str, int]:
         counts == {"teacher_card": 1, "student_card": 1, "assessment_gate_card": 1},
         f"{label} must contain exactly one of each card type, got {counts}",
     )
+    if "learning_dossier" in doc:
+        validate_learning_dossier(doc["learning_dossier"], f"{label}.learning_dossier")
     return counts
 
 

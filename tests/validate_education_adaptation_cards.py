@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 from education_adaptation_cards import EXAMPLES, INVALID_EXAMPLES, SCHEMA, expect_invalid_doc, load_json, require, validate_doc
 
 EXPECTED_INVALID_FAILURES = {
+    "dossier_review_gate_without_evidence.json": "review_gate.evidence_required_ids must contain at least 1 item",
     "final_grade_without_review_card.json": "must not claim final grading authority",
     "human_review_status_approved_card.json": "human_review.status must remain local-review-only",
     "learner_questions_without_misconception_evidence.json": "misconception_evidence required when learner_questions are present",

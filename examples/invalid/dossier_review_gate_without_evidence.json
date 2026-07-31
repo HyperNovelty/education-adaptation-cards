@@ -1,0 +1,176 @@
+{
+  "generated_at": "2026-07-31T12:05:00Z",
+  "safety_mode": "local_review_only",
+  "target_system": "ipublishos_agent_os_bridge",
+  "review_packet": {
+    "packet_id": "invalid_dossier_missing_gate_evidence",
+    "packet_title": "Invalid Dossier Missing Gate Evidence",
+    "packet_path": "examples/invalid/dossier_review_gate_without_evidence.json",
+    "packet_status": "draft_only"
+  },
+  "learning_dossier": {
+    "dossier_id": "invalid_evidence_gate_folder",
+    "dossier_title": "Invalid Evidence Gate Folder",
+    "folder_layout": ["mission.md", "source_reference_sheet.md", "question_map.md", "practice_task.md", "evidence_checklist.md", "review_gate.md"],
+    "learning_mission": {
+      "mission_id": "mission_invalid_gate_check",
+      "audience": "reviewers",
+      "objective": "Demonstrate that review-gate evidence cannot be skipped.",
+      "review_state": "needs_human_review"
+    },
+    "source_reference_sheet": [
+      {
+        "source_id": "PD001",
+        "title": "Alice's Adventures in Wonderland",
+        "creator": "Lewis Carroll",
+        "publication_year": 1865,
+        "public_domain_status": "pre_1929_public_domain_us",
+        "public_domain_basis": "First published in 1865, before 1929; used here as a public-domain United States source example.",
+        "url": "https://www.gutenberg.org/ebooks/11",
+        "excerpt": "Alice was beginning to get very tired of sitting by her sister on the bank."
+      }
+    ],
+    "question_map": [
+      {
+        "question_id": "question_invalid_gate",
+        "question": "What source-bound claim can be reviewed?",
+        "source_ids": ["PD001"],
+        "reviewer_note": "Synthetic invalid fixture question."
+      }
+    ],
+    "practice_task": {
+      "task_id": "task_invalid_gate",
+      "prompt": "Create one source-bound claim row.",
+      "source_ids": ["PD001"],
+      "evidence_output_ids": ["evidence_source_id_present"],
+      "reviewer_note": "Practice task names evidence, but the review gate below skips it."
+    },
+    "evidence_checklist": [
+      {
+        "evidence_id": "evidence_source_id_present",
+        "evidence_item": "The claim row includes source ID PD001.",
+        "source_ids": ["PD001"],
+        "reviewer_note": "Required evidence for local review."
+      }
+    ],
+    "review_gate": {
+      "gate_id": "gate_invalid_missing_evidence",
+      "status": "needs_human_review",
+      "required_roles": ["teacher"],
+      "evidence_required_ids": [],
+      "reviewer_note": "Invalid: the gate cannot omit evidence requirements."
+    }
+  },
+  "education_adaptation_cards": [
+    {
+      "card_id": "teacher_card_invalid_dossier",
+      "card_type": "teacher_card",
+      "title": "Teacher Card Invalid Dossier",
+      "audience": "teacher",
+      "grade_band": "higher_ed",
+      "purpose": "Minimal valid teacher card so the invalid fixture reaches dossier validation.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["PD001"],
+        "blocked_claims_policy": "No claims beyond PD001."
+      },
+      "adaptation_actions": ["Review source-bound task wording."],
+      "risks": [
+        {
+          "risk_id": "teacher_invalid_gate_risk",
+          "risk_level": "medium",
+          "risk_text": "Evidence requirements may be omitted.",
+          "mitigation": "Require review-gate evidence IDs."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher"],
+        "review_notes": ["Invalid fixture for gate evidence testing."]
+      },
+      "outputs": [
+        {
+          "output_id": "teacher_invalid_review_note",
+          "output_type": "review_note",
+          "description": "Minimal review note."
+        }
+      ]
+    },
+    {
+      "card_id": "student_card_invalid_dossier",
+      "card_type": "student_card",
+      "title": "Student Card Invalid Dossier",
+      "audience": "student",
+      "grade_band": "higher_ed",
+      "purpose": "Minimal valid student card so the invalid fixture reaches dossier validation.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["PD001"],
+        "blocked_claims_policy": "No claims beyond PD001."
+      },
+      "adaptation_actions": ["Ask one source-bound question."],
+      "risks": [
+        {
+          "risk_id": "student_invalid_gate_risk",
+          "risk_level": "medium",
+          "risk_text": "The prompt may lack evidence review.",
+          "mitigation": "Require evidence checklist references."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher"],
+        "review_notes": ["Invalid fixture for gate evidence testing."]
+      },
+      "outputs": [
+        {
+          "output_id": "student_invalid_prompt",
+          "output_type": "discussion_prompt",
+          "description": "Minimal prompt."
+        }
+      ]
+    },
+    {
+      "card_id": "assessment_gate_card_invalid_dossier",
+      "card_type": "assessment_gate_card",
+      "title": "Assessment/Gate Card Invalid Dossier",
+      "audience": "curriculum_reviewer",
+      "grade_band": "higher_ed",
+      "purpose": "Minimal valid assessment card so the invalid fixture reaches dossier validation.",
+      "source_binding": {
+        "source_policy": "no_new_claims",
+        "allowed_source_ids": ["PD001"],
+        "blocked_claims_policy": "No claims beyond PD001."
+      },
+      "adaptation_actions": ["Check required evidence IDs."],
+      "risks": [
+        {
+          "risk_id": "gate_invalid_evidence_risk",
+          "risk_level": "high",
+          "risk_text": "A review gate may skip evidence.",
+          "mitigation": "Validator requires non-empty review-gate evidence IDs."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["curriculum_reviewer"],
+        "review_notes": ["Invalid fixture for gate evidence testing."]
+      },
+      "outputs": [
+        {
+          "output_id": "gate_invalid_report",
+          "output_type": "gate_report",
+          "description": "Minimal gate report."
+        }
+      ],
+      "assessment_gates": [
+        {
+          "gate_id": "invalid_gate_fixture_present",
+          "gate_name": "Invalid dossier fixture includes assessment card gate",
+          "gate_status": "needs_review",
+          "evidence_required": ["Dossier review gate evidence IDs"]
+        }
+      ]
+    }
+  ]
+}

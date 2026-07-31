@@ -26,6 +26,86 @@ def render_indented_bullets(items: list[str]) -> list[str]:
     return [f"  - {item}" for item in items]
 
 
+def render_learning_dossier(dossier: dict[str, Any]) -> list[str]:
+    mission = dossier["learning_mission"]
+    task = dossier["practice_task"]
+    gate = dossier["review_gate"]
+    lines = [
+        "## Folder-Based Learning Dossier",
+        "",
+        f"- Dossier ID: `{dossier['dossier_id']}`",
+        f"- Dossier title: {dossier['dossier_title']}",
+        "- Folder layout:",
+        *render_indented_bullets(dossier["folder_layout"]),
+        "",
+        "### Learning Mission",
+        "",
+        f"- Mission ID: `{mission['mission_id']}`",
+        f"- Audience: {mission['audience']}",
+        f"- Review state: `{mission['review_state']}`",
+        f"- Objective: {mission['objective']}",
+        "",
+        "### Source/Reference Sheet",
+        "",
+    ]
+    for source in dossier["source_reference_sheet"]:
+        lines.extend(
+            [
+                f"- `{source['source_id']}`: {source['title']} ({source['publication_year']}), {source['creator']}",
+                f"  Public-domain status: `{source['public_domain_status']}`",
+                f"  Public-domain basis: {source['public_domain_basis']}",
+                f"  URL: {source['url']}",
+                f"  Minimal excerpt: \"{source['excerpt']}\"",
+            ]
+        )
+    lines.extend(["", "### Question Map", ""])
+    for question in dossier["question_map"]:
+        lines.extend(
+            [
+                f"- `{question['question_id']}`: {question['question']}",
+                f"  Source IDs: {', '.join(question['source_ids'])}",
+                f"  Reviewer note: {question['reviewer_note']}",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "### Practice Task",
+            "",
+            f"- Task ID: `{task['task_id']}`",
+            f"- Prompt: {task['prompt']}",
+            f"- Source IDs: {', '.join(task['source_ids'])}",
+            f"- Evidence output IDs: {', '.join(task['evidence_output_ids'])}",
+            f"- Reviewer note: {task['reviewer_note']}",
+            "",
+            "### Evidence Checklist",
+            "",
+        ]
+    )
+    for evidence in dossier["evidence_checklist"]:
+        lines.extend(
+            [
+                f"- `{evidence['evidence_id']}`: {evidence['evidence_item']}",
+                f"  Source IDs: {', '.join(evidence['source_ids'])}",
+                f"  Reviewer note: {evidence['reviewer_note']}",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "### Review Gate",
+            "",
+            f"- Gate ID: `{gate['gate_id']}`",
+            f"- Status: `{gate['status']}`",
+            f"- Required roles: {', '.join(gate['required_roles'])}",
+            f"- Evidence required IDs: {', '.join(gate['evidence_required_ids'])}",
+            f"- Reviewer note: {gate['reviewer_note']}",
+            "",
+        ]
+    )
+    return lines
+
+
 def render_card(card: dict[str, Any]) -> list[str]:
     lines = [
         f"## {card['title']}",
@@ -142,6 +222,8 @@ def render_dossier(doc: dict[str, Any], source_path: Path) -> str:
         "- Rendering mode: deterministic markdown generated from local fixture content only.",
         "",
     ]
+    if "learning_dossier" in doc:
+        lines.extend(render_learning_dossier(doc["learning_dossier"]))
     for card in cards:
         lines.extend(render_card(card))
     return "\n".join(lines).rstrip() + "\n"
@@ -151,7 +233,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("fixture", nargs="?", type=Path, help="Path to an education adaptation card JSON fixture")
     parser.add_argument("--input", dest="input_path", type=Path, help="Path to an education adaptation card JSON fixture")
-    parser.add_argument("-o", "--output", type=Path, help="Write markdown to a file instead of stdout")
+    output_group = parser.add_mutually_exclusive_group()
+    output_group.add_argument("-o", "--output", type=Path, help="Write markdown to a file instead of stdout")
+    output_group.add_argument("--check", type=Path, help="Compare markdown to a checked-in render without writing files")
     args = parser.parse_args()
     if args.fixture and args.input_path:
         parser.error("use either positional fixture or --input, not both")
@@ -165,6 +249,17 @@ def main() -> int:
     fixture = (args.input_path or args.fixture).resolve()
     doc = load_json(fixture)
     rendered = render_dossier(doc, fixture)
+    if args.check:
+        target = args.check
+        if not target.exists():
+            print(f"render_check=missing target={target}", file=sys.stderr)
+            return 1
+        checked_in = target.read_text(encoding="utf-8")
+        if checked_in != rendered:
+            print(f"render_check=stale target={target}", file=sys.stderr)
+            return 1
+        print(f"render_check=ok target={target}")
+        return 0
     if args.output:
         args.output.write_text(rendered, encoding="utf-8")
     else:

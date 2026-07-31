@@ -18,6 +18,7 @@ Schema:
 Fixtures:
 
 - `examples/education_cards.minimal.json` — minimal complete lane with one teacher card, one student card, and one assessment/gate card.
+- `examples/education_cards.public_domain_folder_dossier.json` — complete folder-based dossier using a pre-1929 public-domain text source.
 - `examples/education_cards.review_packet_fixture.json` — fuller mock attachment targeting the existing Voice-to-Source review packet fixture.
 
 ## Contract shape
@@ -30,6 +31,7 @@ Top-level fields:
 | `safety_mode` | Must be `local_review_only`. |
 | `target_system` | `ipublishos`, `agent_os`, or `ipublishos_agent_os_bridge`. |
 | `review_packet` | Local packet reference that cards attach to. |
+| `learning_dossier` | Optional strict folder-based dossier metadata. Required sections are mission, source/reference sheet, question map, practice task, evidence checklist, and review gate. |
 | `education_adaptation_cards` | Array of card objects. A complete lane has exactly one teacher, one student, and one assessment/gate card. |
 
 Required card fields:
@@ -90,21 +92,23 @@ Use this extension when adapting iPublishOS review packets into teaching/workboo
 
 `Source Packet → Mission → Question Map → Lesson Unit → Reference Sheet → Practice Task → Evidence Packet → Human Review Gate`
 
-Recommended future card type or companion object:
+The implemented companion object is the top-level `learning_dossier` block. It is additive: older fixtures without it remain valid, but fixtures that include it must provide every required section.
 
-- `learning_dossier_card` or `proof_of_learning_card`
+Required folder dossier fields:
 
-Supported verification concepts:
+| Field | Meaning |
+| --- | --- |
+| `dossier_id` | Stable local slug for the folder dossier. |
+| `dossier_title` | Reviewer-facing folder title. |
+| `folder_layout` | Deterministic list of folder files such as `mission.md`, `source_reference_sheet.md`, `question_map.md`, `practice_task.md`, `evidence_checklist.md`, and `review_gate.md`. |
+| `learning_mission` | Mission ID, audience, objective, and local-only review state. |
+| `source_reference_sheet` | One or more explicit sources with source ID, title, creator, publication year, public-domain status/basis, URL, and a minimal excerpt. |
+| `question_map` | Source-bound questions with reviewer notes. |
+| `practice_task` | Local practice prompt with source IDs and evidence output IDs. |
+| `evidence_checklist` | Evidence IDs and checklist items that reviewers can inspect without storing student records. |
+| `review_gate` | Local-only status, required human roles, and required evidence IDs. |
 
-- learner mission / why this lesson exists;
-- source-to-lesson trace;
-- learner questions;
-- likely misconceptions with evidence signals;
-- practice task;
-- expected evidence;
-- rubric / competence level;
-- human reviewer role;
-- release status.
+Validation links `question_map`, `practice_task`, `evidence_checklist`, and `review_gate` to declared source/evidence IDs. A dossier review gate cannot silently omit evidence: `review_gate.evidence_required_ids` must be non-empty and must reference checklist entries.
 
 Boundary: this does **not** authorize LMS integration, student data collection, grading, account actions, classroom deployment, or public education claims. It is a local review-packet pattern until separately approved.
 
@@ -116,7 +120,8 @@ Run from the repository root:
 python3 -m json.tool schemas/education_adaptation_cards.schema.json >/tmp/education_adaptation_cards.schema.validated.json
 python3 -m json.tool examples/education_cards.minimal.json >/tmp/education_cards.minimal.validated.json
 python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/education_cards.review_packet_fixture.validated.json
+python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json >/tmp/education_cards.public_domain_folder_dossier.validated.json
 python3 tests/validate_education_adaptation_cards.py
 ```
 
-The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, blocked public-safety claims, and assessment gate requirements.
+The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, dossier source/evidence links, blocked public-safety claims, and assessment gate requirements.

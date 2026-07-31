@@ -32,6 +32,8 @@ jobs:
                   json.load(f)
           print(f'validated {len(files)} json files')
           PY
+      - name: Run education adaptation card validator
+        run: python tests/validate_education_adaptation_cards.py
       - name: Run unittest discovery when tests exist
         run: |
           if [ -d tests ]; then

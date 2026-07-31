@@ -8,8 +8,11 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 
 - `schemas/education_adaptation_cards.schema.json` — documentation-facing JSON Schema contract.
 - `examples/education_cards.minimal.json` — smallest complete card lane fixture.
+- `examples/education_cards.public_domain_folder_dossier.json` — complete folder-based learning dossier tied to a pre-1929 public-domain source.
 - `examples/education_cards.review_packet_fixture.json` — fuller fixture referencing the existing Voice-to-Source review packet output.
 - `examples/rendered/education_demo_dossier.md` — generated markdown demo from the review packet fixture.
+- `examples/rendered/public_domain_learning_dossier.md` — generated markdown demo from the public-domain folder dossier fixture.
+- `examples/invalid/dossier_review_gate_without_evidence.json` — negative fixture proving dossier review gates must name required evidence.
 - `examples/invalid/human_review_status_approved_card.json` — negative fixture proving local-review-only human review states are enforced.
 - `examples/invalid/learner_questions_without_misconception_evidence.json` — negative fixture proving learner questions require misconception evidence.
 - `docs/education_adaptation_cards_contract.md` — implementation notes and review-packet integration guidance.
@@ -30,6 +33,7 @@ Learner questions and misconception evidence are synthetic, source-bound review 
 ```bash
 python3 tests/validate_education_adaptation_cards.py
 python3 scripts/render_learning_dossier.py --input examples/education_cards.review_packet_fixture.json --output /tmp/education_demo_dossier.md
+python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --output /tmp/public_domain_learning_dossier.md
 sed -n '1,80p' /tmp/education_demo_dossier.md
 ```
 
@@ -41,6 +45,7 @@ For a guided review, see `docs/DEMO_WALKTHROUGH.md`.
 python3 -m json.tool schemas/education_adaptation_cards.schema.json >/tmp/education_adaptation_cards.schema.validated.json
 python3 -m json.tool examples/education_cards.minimal.json >/tmp/education_cards.minimal.validated.json
 python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/education_cards.review_packet_fixture.validated.json
+python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json >/tmp/education_cards.public_domain_folder_dossier.validated.json
 python3 tests/validate_education_adaptation_cards.py
 ```
 
@@ -52,5 +57,7 @@ Run the validators with:
 ```bash
 python3 tests/validate_education_adaptation_cards.py
 python3 scripts/render_learning_dossier.py examples/education_cards.review_packet_fixture.json
+python3 scripts/render_learning_dossier.py examples/education_cards.public_domain_folder_dossier.json
+python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.md
 python3 tests/test_render_learning_dossier_smoke.py
 ```

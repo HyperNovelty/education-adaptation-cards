@@ -11,6 +11,7 @@
     "safety_mode": {"const": "local_review_only", "description": "Hard boundary: this artifact is local review material only, not publication, classroom deployment, or student-facing release."},
     "target_system": {"enum": ["ipublishos", "agent_os", "ipublishos_agent_os_bridge"]},
     "review_packet": {"$ref": "#/$defs/review_packet_ref"},
+    "learning_dossier": {"$ref": "#/$defs/learning_dossier"},
     "education_adaptation_cards": {
       "type": "array",
       "minItems": 3,
@@ -27,7 +28,10 @@
         "packet_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
         "packet_title": {"type": "string", "minLength": 1},
         "packet_path": {"type": "string", "description": "Absolute or repo-relative local packet path that must resolve inside this repository checkout for this prototype."},
-        "packet_status": {"enum": ["draft_only", "needs_human_review", "approved_for_internal_review", "rejected"]}
+        "packet_status": {
+          "enum": ["draft_only", "needs_human_review", "approved_for_internal_review", "rejected"],
+          "description": "Compatible packet status enum. The local custom validator intentionally gates runnable fixtures to draft_only or needs_human_review until separate approval."
+        }
       }
     },
     "education_card": {
@@ -77,7 +81,10 @@
       "required": ["status", "required_roles", "review_notes"],
       "additionalProperties": false,
       "properties": {
-        "status": {"enum": ["draft_only", "needs_human_review", "approved_for_internal_review", "rejected"]},
+        "status": {
+          "enum": ["draft_only", "needs_human_review", "approved_for_internal_review", "rejected"],
+          "description": "Compatible human review status enum. The local custom validator intentionally gates runnable fixtures to draft_only or needs_human_review until separate approval."
+        },
         "required_roles": {"type": "array", "minItems": 1, "items": {"enum": ["author", "editor", "teacher", "curriculum_reviewer", "legal_or_policy"]}},
         "review_notes": {"type": "array", "items": {"type": "string"}}
       }
@@ -127,6 +134,109 @@
         "gate_name": {"type": "string", "minLength": 1},
         "gate_status": {"enum": ["pass", "fail", "needs_review", "not_run"]},
         "evidence_required": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "learning_dossier": {
+      "type": "object",
+      "required": ["dossier_id", "dossier_title", "folder_layout", "learning_mission", "source_reference_sheet", "question_map", "practice_task", "evidence_checklist", "review_gate"],
+      "additionalProperties": false,
+      "properties": {
+        "dossier_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
+        "dossier_title": {"type": "string", "minLength": 1},
+        "folder_layout": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "learning_mission": {"$ref": "#/$defs/learning_mission"},
+        "source_reference_sheet": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/dossier_source"}},
+        "question_map": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/dossier_question"}},
+        "practice_task": {"$ref": "#/$defs/practice_task"},
+        "evidence_checklist": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence_checklist_item"}},
+        "review_gate": {"$ref": "#/$defs/dossier_review_gate"}
+      }
+    },
+    "learning_mission": {
+      "type": "object",
+      "required": ["mission_id", "audience", "objective", "review_state"],
+      "additionalProperties": false,
+      "properties": {
+        "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
+        "audience": {"type": "string", "minLength": 1},
+        "objective": {"type": "string", "minLength": 1},
+        "review_state": {"enum": ["draft_only", "needs_human_review"]}
+      }
+    },
+    "dossier_source": {
+      "type": "object",
+      "required": ["source_id", "title", "creator", "publication_year", "public_domain_status", "public_domain_basis", "url", "excerpt"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "public_domain_status": {"const": "pre_1929_public_domain_us"}
+            },
+            "required": ["public_domain_status"]
+          },
+          "then": {
+            "properties": {
+              "publication_year": {"maximum": 1928}
+            }
+          }
+        }
+      ],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "creator": {"type": "string", "minLength": 1},
+        "publication_year": {"type": "integer"},
+        "public_domain_status": {"enum": ["pre_1929_public_domain_us", "us_federal_government_work"]},
+        "public_domain_basis": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "pattern": "^https://"},
+        "excerpt": {"type": "string", "minLength": 1, "maxLength": 500}
+      }
+    },
+    "dossier_question": {
+      "type": "object",
+      "required": ["question_id", "question", "source_ids", "reviewer_note"],
+      "additionalProperties": false,
+      "properties": {
+        "question_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
+        "question": {"type": "string", "minLength": 1},
+        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "reviewer_note": {"type": "string", "minLength": 1}
+      }
+    },
+    "practice_task": {
+      "type": "object",
+      "required": ["task_id", "prompt", "source_ids", "evidence_output_ids", "reviewer_note"],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
+        "prompt": {"type": "string", "minLength": 1},
+        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "evidence_output_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "reviewer_note": {"type": "string", "minLength": 1}
+      }
+    },
+    "evidence_checklist_item": {
+      "type": "object",
+      "required": ["evidence_id", "evidence_item", "source_ids", "reviewer_note"],
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
+        "evidence_item": {"type": "string", "minLength": 1},
+        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "reviewer_note": {"type": "string", "minLength": 1}
+      }
+    },
+    "dossier_review_gate": {
+      "type": "object",
+      "required": ["gate_id", "status", "required_roles", "evidence_required_ids", "reviewer_note"],
+      "additionalProperties": false,
+      "properties": {
+        "gate_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
+        "status": {"enum": ["draft_only", "needs_human_review"]},
+        "required_roles": {"type": "array", "minItems": 1, "items": {"enum": ["author", "editor", "teacher", "curriculum_reviewer", "legal_or_policy"]}},
+        "evidence_required_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "reviewer_note": {"type": "string", "minLength": 1}
       }
     }
   }

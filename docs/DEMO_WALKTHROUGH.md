@@ -17,6 +17,13 @@ The fixture is deliberately labeled `local_review_only` and `draft_only`. Its
 review statuses stay at `needs_human_review`, so the sample is useful as review
 material but not as classroom approval.
 
+Then open `examples/education_cards.public_domain_folder_dossier.json`. It adds
+a top-level folder dossier around a clearly identified public-domain source:
+Lewis Carroll's 1865 `Alice's Adventures in Wonderland`, referenced by Project
+Gutenberg URL with a short excerpt only. The folder dossier makes the mission,
+source/reference sheet, question map, practice task, evidence checklist, and
+review gate visible before the three-card lane.
+
 ## What the Validator Checks
 
 Run:
@@ -34,6 +41,8 @@ current contract markers, including:
   assessment/gate card
 - human review states remain review-only
 - assessment gates are present where required
+- folder dossiers, when present, link questions, practice tasks, evidence
+  checklist items, and review-gate evidence IDs to declared sources/evidence
 - invalid fixtures fail for clear local-review reasons
 
 It is not a general compliance checker or curriculum approval engine.
@@ -44,22 +53,30 @@ Run:
 
 ```bash
 python3 scripts/render_learning_dossier.py --input examples/education_cards.review_packet_fixture.json --output /tmp/education_demo_dossier.md
+python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --output /tmp/public_domain_learning_dossier.md
 ```
 
 The renderer converts the fixture into deterministic Markdown. It preserves the
 review packet context, safety mode, card purposes, source-binding rules, risks,
-human review notes, outputs, and assessment gates.
+human review notes, outputs, assessment gates, and any top-level folder dossier
+metadata.
 
 A checked-in demo render is available at
 `examples/rendered/education_demo_dossier.md`. It is generated from
 `examples/education_cards.review_packet_fixture.json` only.
+
+A public-domain folder demo render is available at
+`examples/rendered/public_domain_learning_dossier.md`. It is generated from
+`examples/education_cards.public_domain_folder_dossier.json`.
 
 ## How to Review in 90 Seconds
 
 1. Open the fixture and confirm it is synthetic and `local_review_only`.
 2. Run the validator and confirm both valid and invalid examples behave as
    expected.
-3. Open the rendered dossier and confirm it says local review material only, not
+3. Open the public-domain fixture and confirm the source sheet identifies title,
+   creator, publication year, public-domain basis, URL, and minimal excerpt.
+4. Open the rendered dossier and confirm it says local review material only, not
    classroom-cleared, and no LMS/network/account/publish/student-data actions are
    authorized.
 
