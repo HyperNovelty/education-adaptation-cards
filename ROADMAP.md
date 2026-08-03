@@ -4,7 +4,6 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Near-term maintainer work
 
-- Strengthen schemas for learner-state beyond source-bound questions, assessment evidence, and review-gate outcomes.
 - Add more negative fixtures that prevent cards from silently moving from draft/review states into approved learner-facing states.
 - Keep the project local/reference-only: no student data, no LMS integration, no classroom deployment, and no account actions.
 
@@ -15,7 +14,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Good first issues
 
-- Add an invalid fixture for malformed learner-question statuses or misconception evidence missing source IDs.
+- Add invalid fixtures for future review-state boundary regressions.
 
 ## Recently completed
 
@@ -24,3 +23,5 @@ This repository explores the idea that the next classroom may be a folder: a dur
 - Added a negative fixture for a card that has learner questions without misconception evidence.
 - Expanded the markdown renderer with learner-question and misconception-evidence sections.
 - Added a public-domain folder-based learning dossier example with mission, source/reference sheet, question map, practice task, evidence checklist, and review gate metadata.
+- Hardened card-level learner-question and misconception-evidence source bindings, including duplicate source IDs, malformed status/source combinations, and undeclared source references.
+- Added invalid fixtures for source-bound learner questions without source IDs and misconception evidence with undeclared source IDs.

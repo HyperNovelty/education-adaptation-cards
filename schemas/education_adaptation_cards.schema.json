@@ -50,8 +50,8 @@
         "risks": {"type": "array", "items": {"$ref": "#/$defs/risk"}},
         "human_review": {"$ref": "#/$defs/human_review"},
         "outputs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/output_ref"}},
-        "learner_questions": {"type": "array", "items": {"$ref": "#/$defs/learner_question"}, "description": "Optional local-only learner questions that remain source-bound and unresolved until teacher/reviewer review."},
-        "misconception_evidence": {"type": "array", "items": {"$ref": "#/$defs/misconception_evidence"}, "description": "Optional local-only evidence records for likely misconception signals and teacher/reviewer response."},
+        "learner_questions": {"type": "array", "items": {"$ref": "#/$defs/learner_question"}, "description": "Optional local-only learner questions. When present, each question's source_ids must be unique, must reference this card's source_binding.allowed_source_ids, must be non-empty for source_bound or partially_sourced, and must be empty for unanswered or out_of_scope."},
+        "misconception_evidence": {"type": "array", "items": {"$ref": "#/$defs/misconception_evidence"}, "description": "Optional local-only evidence records for likely misconception signals and teacher/reviewer response. When present, each evidence record requires one or more unique source_ids declared in this card's source_binding.allowed_source_ids."},
         "assessment_gates": {"type": "array", "items": {"$ref": "#/$defs/assessment_gate"}, "description": "Required when card_type is assessment_gate_card."}
       }
     },
@@ -61,7 +61,7 @@
       "additionalProperties": false,
       "properties": {
         "source_policy": {"enum": ["packet_sources_only", "approved_references_only", "no_new_claims"]},
-        "allowed_source_ids": {"type": "array", "items": {"type": "string"}},
+        "allowed_source_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}, "description": "Card-local source IDs that learner questions and misconception evidence may cite. Duplicate IDs are rejected by the local validator."},
         "blocked_claims_policy": {"type": "string", "minLength": 1}
       }
     },
@@ -103,11 +103,39 @@
       "type": "object",
       "required": ["question_id", "question_text", "question_status", "source_ids", "reviewer_note"],
       "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "question_status": {"enum": ["source_bound", "partially_sourced"]}
+            },
+            "required": ["question_status"]
+          },
+          "then": {
+            "properties": {
+              "source_ids": {"minItems": 1}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "question_status": {"enum": ["unanswered", "out_of_scope"]}
+            },
+            "required": ["question_status"]
+          },
+          "then": {
+            "properties": {
+              "source_ids": {"maxItems": 0}
+            }
+          }
+        }
+      ],
       "properties": {
         "question_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
         "question_text": {"type": "string", "minLength": 1},
         "question_status": {"enum": ["unanswered", "partially_sourced", "source_bound", "out_of_scope"]},
-        "source_ids": {"type": "array", "items": {"type": "string"}},
+        "source_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}, "description": "Unique card-local source IDs. Must be non-empty for source_bound or partially_sourced questions and empty for unanswered or out_of_scope questions."},
         "reviewer_note": {"type": "string", "minLength": 1}
       }
     },
@@ -119,7 +147,7 @@
         "misconception_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{2,120}$"},
         "misconception_text": {"type": "string", "minLength": 1},
         "evidence_signal": {"type": "string", "minLength": 1},
-        "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "source_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}, "description": "One or more unique card-local source IDs declared in source_binding.allowed_source_ids."},
         "severity": {"enum": ["low", "medium", "high", "unknown"]},
         "teacher_response": {"type": "string", "minLength": 1},
         "reviewer_note": {"type": "string", "minLength": 1}

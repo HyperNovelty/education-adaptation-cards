@@ -44,7 +44,7 @@ Required card fields:
 | `audience` | Primary audience for rendering/review. |
 | `grade_band` | Coarse education/learner band; can be `unspecified`. |
 | `purpose` | What the card is supposed to do. |
-| `source_binding` | Policy for limiting claims to packet sources. |
+| `source_binding` | Policy for limiting claims to packet sources. `allowed_source_ids` must not contain duplicates. |
 | `adaptation_actions` | Implementation-facing actions a renderer/builder may take. |
 | `risks` | Known failure modes and mitigations. |
 | `human_review` | Review status, required roles, and notes. |
@@ -60,7 +60,7 @@ Learner question fields:
 | `question_id` | Stable local slug. |
 | `question_text` | Reviewer-facing unresolved or source-check question. |
 | `question_status` | `unanswered`, `partially_sourced`, `source_bound`, or `out_of_scope`. |
-| `source_ids` | Packet source IDs that bound the question; may be empty for unanswered or out-of-scope questions. |
+| `source_ids` | Unique packet source IDs declared in the same card's `source_binding.allowed_source_ids`. Required for `source_bound` and `partially_sourced`; must be empty for `unanswered` and `out_of_scope`. |
 | `reviewer_note` | Local reviewer note. Do not include learner identity or student data. |
 
 Misconception evidence fields:
@@ -70,7 +70,7 @@ Misconception evidence fields:
 | `misconception_id` | Stable local slug. |
 | `misconception_text` | Likely misconception phrased for teacher/reviewer planning, not a finding about a real learner. |
 | `evidence_signal` | Source-bound signal that explains why the misconception should be reviewed. |
-| `source_ids` | One or more packet source IDs supporting the evidence signal. |
+| `source_ids` | One or more unique packet source IDs supporting the evidence signal; every ID must be declared in the same card's `source_binding.allowed_source_ids`. |
 | `severity` | `low`, `medium`, `high`, or `unknown`. |
 | `teacher_response` | Suggested teacher/reviewer response. |
 | `reviewer_note` | Local reviewer note. Do not include learner identity or student data. |
@@ -124,4 +124,4 @@ python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json 
 python3 tests/validate_education_adaptation_cards.py
 ```
 
-The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, dossier source/evidence links, blocked public-safety claims, and assessment gate requirements.
+The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, card-level source-binding uniqueness and source-reference declarations, dossier source/evidence links, blocked public-safety claims, and assessment gate requirements.

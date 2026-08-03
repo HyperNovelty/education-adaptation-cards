@@ -14,7 +14,9 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `examples/rendered/public_domain_learning_dossier.md` — generated markdown demo from the public-domain folder dossier fixture.
 - `examples/invalid/dossier_review_gate_without_evidence.json` — negative fixture proving dossier review gates must name required evidence.
 - `examples/invalid/human_review_status_approved_card.json` — negative fixture proving local-review-only human review states are enforced.
+- `examples/invalid/learner_question_source_bound_without_source_ids.json` — negative fixture proving source-bound learner questions must name source IDs.
 - `examples/invalid/learner_questions_without_misconception_evidence.json` — negative fixture proving learner questions require misconception evidence.
+- `examples/invalid/misconception_evidence_undeclared_source_id.json` — negative fixture proving misconception evidence source IDs must be declared by the card.
 - `docs/education_adaptation_cards_contract.md` — implementation notes and review-packet integration guidance.
 - `docs/DEMO_WALKTHROUGH.md` — plain-language reviewer walkthrough.
 - `tests/validate_education_adaptation_cards.py` — Python standard-library validator; no third-party installs.
@@ -26,7 +28,7 @@ This prototype is local review material only. It does not publish, contact anyon
 
 Assessment artifacts are review aids, not grading automation, diagnosis, or student surveillance; see `docs/ASSESSMENT_BOUNDARY.md`.
 
-Learner questions and misconception evidence are synthetic, source-bound review objects. They are not student records, learner profiles, grading inputs, or classroom-clearance claims.
+Learner questions and misconception evidence are synthetic, source-bound review objects. Question and evidence source IDs must be unique and declared in the card's source binding. They are not student records, learner profiles, grading inputs, or classroom-clearance claims.
 
 ## Try it in 2 minutes
 
@@ -47,6 +49,8 @@ python3 -m json.tool examples/education_cards.minimal.json >/tmp/education_cards
 python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/education_cards.review_packet_fixture.validated.json
 python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json >/tmp/education_cards.public_domain_folder_dossier.validated.json
 python3 tests/validate_education_adaptation_cards.py
+python3 -m unittest discover -s tests -p 'test_*.py'
+python3 -m pytest -q
 ```
 
 
