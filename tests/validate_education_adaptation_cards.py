@@ -12,10 +12,19 @@ if str(ROOT) not in sys.path:
 from education_adaptation_cards import EXAMPLES, INVALID_EXAMPLES, SCHEMA, expect_invalid_doc, load_json, require, validate_doc
 
 EXPECTED_INVALID_FAILURES = {
+    "dossier_learning_mission_review_state_approved.json": "learning_mission.review_state must remain local-review-only",
+    "dossier_review_gate_status_approved.json": "review_gate.status must remain local-review-only",
     "dossier_review_gate_without_evidence.json": "review_gate.evidence_required_ids must contain at least 1 item",
     "final_grade_without_review_card.json": "must not claim final grading authority",
     "human_review_status_approved_card.json": "human_review.status must remain local-review-only",
+    "learner_question_source_bound_without_source_ids.json": (
+        "learner_questions[0].source_ids must be non-empty for source_bound learner question"
+    ),
     "learner_questions_without_misconception_evidence.json": "misconception_evidence required when learner_questions are present",
+    "misconception_evidence_undeclared_source_id.json": (
+        "misconception_evidence[0].source_ids undeclared source_id: S999"
+    ),
+    "packet_status_approved_internal_review.json": "review_packet.packet_status must remain local-review-only",
 }
 
 

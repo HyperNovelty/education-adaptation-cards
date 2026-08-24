@@ -7,7 +7,7 @@ Local-only implementation-facing mock contract for adding education adaptation c
 - Work stays inside this repository checkout.
 - Artifacts are review-packet attachments, not classroom deployment artifacts.
 - No network calls, third-party package installs, public publishing, LMS/account actions, credentials, outreach, or student data handling.
-- All cards remain `draft_only` or `needs_human_review` until explicit human approval.
+- Packet, dossier, review-gate, and card human-review states remain `draft_only` or `needs_human_review`. This repository does not promote, approve, publish, or clear artifacts for classroom use.
 
 ## Primary artifact
 
@@ -20,6 +20,7 @@ Fixtures:
 - `examples/education_cards.minimal.json` — minimal complete lane with one teacher card, one student card, and one assessment/gate card.
 - `examples/education_cards.public_domain_folder_dossier.json` — complete folder-based dossier using a pre-1929 public-domain text source.
 - `examples/education_cards.review_packet_fixture.json` — fuller mock attachment targeting the existing Voice-to-Source review packet fixture.
+- `examples/rendered/public_domain_review_boundaries.json` — deterministic JSON report generated from the public-domain fixture for freshness checks.
 
 ## Contract shape
 
@@ -44,7 +45,7 @@ Required card fields:
 | `audience` | Primary audience for rendering/review. |
 | `grade_band` | Coarse education/learner band; can be `unspecified`. |
 | `purpose` | What the card is supposed to do. |
-| `source_binding` | Policy for limiting claims to packet sources. |
+| `source_binding` | Policy for limiting claims to packet sources. `allowed_source_ids` must not contain duplicates. |
 | `adaptation_actions` | Implementation-facing actions a renderer/builder may take. |
 | `risks` | Known failure modes and mitigations. |
 | `human_review` | Review status, required roles, and notes. |
@@ -60,7 +61,7 @@ Learner question fields:
 | `question_id` | Stable local slug. |
 | `question_text` | Reviewer-facing unresolved or source-check question. |
 | `question_status` | `unanswered`, `partially_sourced`, `source_bound`, or `out_of_scope`. |
-| `source_ids` | Packet source IDs that bound the question; may be empty for unanswered or out-of-scope questions. |
+| `source_ids` | Unique packet source IDs declared in the same card's `source_binding.allowed_source_ids`. Required for `source_bound` and `partially_sourced`; must be empty for `unanswered` and `out_of_scope`. |
 | `reviewer_note` | Local reviewer note. Do not include learner identity or student data. |
 
 Misconception evidence fields:
@@ -70,7 +71,7 @@ Misconception evidence fields:
 | `misconception_id` | Stable local slug. |
 | `misconception_text` | Likely misconception phrased for teacher/reviewer planning, not a finding about a real learner. |
 | `evidence_signal` | Source-bound signal that explains why the misconception should be reviewed. |
-| `source_ids` | One or more packet source IDs supporting the evidence signal. |
+| `source_ids` | One or more unique packet source IDs supporting the evidence signal; every ID must be declared in the same card's `source_binding.allowed_source_ids`. |
 | `severity` | `low`, `medium`, `high`, or `unknown`. |
 | `teacher_response` | Suggested teacher/reviewer response. |
 | `reviewer_note` | Local reviewer note. Do not include learner identity or student data. |
@@ -82,7 +83,19 @@ Misconception evidence fields:
 3. Verify exactly one `teacher_card`, one `student_card`, and one `assessment_gate_card`.
 4. Render teacher/student sections only as draft review material.
 5. Render the assessment/gate summary near the packet's top-level review decision area.
-6. Block external/classroom release unless human review statuses are upgraded outside this local mock.
+6. Block external/classroom release; this local mock only reports whether states remain within `local_review_only`.
+
+## Review-boundary report
+
+Run from the repository root:
+
+```bash
+python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --format json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
+```
+
+The report inventories `review_packet.packet_status`, optional `learning_dossier.learning_mission.review_state`, optional `learning_dossier.review_gate.status`, and each card's `human_review.status` in deterministic reviewer order. Each item includes a label, location, observed status, allowed status set, and pass/violation result. The command exits nonzero for malformed JSON, stale checked-in JSON, validation failures, or any state outside `draft_only` and `needs_human_review`.
 
 ## Learning dossier extension
 
@@ -124,4 +137,4 @@ python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json 
 python3 tests/validate_education_adaptation_cards.py
 ```
 
-The validator intentionally uses only the Python standard library. It is not a general JSON Schema engine; it validates this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, dossier source/evidence links, blocked public-safety claims, and assessment gate requirements.
+The validator and review-boundary reporter intentionally use only the Python standard library. They are not general JSON Schema or compliance engines; they validate this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, card-level source-binding uniqueness and source-reference declarations, dossier source/evidence links, blocked public-safety claims, and assessment gate requirements.

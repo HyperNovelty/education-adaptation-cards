@@ -1,0 +1,129 @@
+{
+  "generated_at": "2026-08-03T00:00:00Z",
+  "safety_mode": "local_review_only",
+  "target_system": "ipublishos_agent_os_bridge",
+  "review_packet": {
+    "packet_id": "invalid_misconception_undeclared_source",
+    "packet_title": "Invalid Misconception Evidence With Undeclared Source",
+    "packet_path": "examples/education_cards.minimal.json",
+    "packet_status": "draft_only"
+  },
+  "education_adaptation_cards": [
+    {
+      "card_id": "teacher_card_misconception_undeclared_source",
+      "card_type": "teacher_card",
+      "title": "Teacher Card Placeholder",
+      "audience": "teacher",
+      "grade_band": "higher_ed",
+      "purpose": "Complete the lane shape for the invalid fixture.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Do not introduce claims outside packet sources."
+      },
+      "adaptation_actions": ["Keep all prompts draft-only."],
+      "risks": [],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher"],
+        "review_notes": ["Placeholder card."]
+      },
+      "outputs": [
+        {
+          "output_id": "teacher_placeholder_output",
+          "output_type": "lesson_plan",
+          "description": "Placeholder lesson note."
+        }
+      ]
+    },
+    {
+      "card_id": "student_card_misconception_undeclared_source",
+      "card_type": "student_card",
+      "title": "Student Card With Undeclared Misconception Source",
+      "audience": "student",
+      "grade_band": "higher_ed",
+      "purpose": "Show that misconception evidence cannot cite a source outside the card binding.",
+      "source_binding": {
+        "source_policy": "packet_sources_only",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Prompts may ask questions, but cannot state new facts beyond packet sources."
+      },
+      "adaptation_actions": ["Review misconception evidence sources."],
+      "risks": [
+        {
+          "risk_id": "undeclared_misconception_source",
+          "risk_level": "high",
+          "risk_text": "Misconception evidence could imply support from an undeclared source.",
+          "mitigation": "Reject evidence source IDs that are absent from the card source binding."
+        }
+      ],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["teacher"],
+        "review_notes": ["Invalid fixture should fail before rendering."]
+      },
+      "outputs": [
+        {
+          "output_id": "student_misconception_output",
+          "output_type": "review_note",
+          "description": "Invalid local review note."
+        }
+      ],
+      "learner_questions": [
+        {
+          "question_id": "question_declared_source",
+          "question_text": "Which claim is supported by S001?",
+          "question_status": "source_bound",
+          "source_ids": ["S001"],
+          "reviewer_note": "Synthetic source-check question; no learner response or identity is recorded."
+        }
+      ],
+      "misconception_evidence": [
+        {
+          "misconception_id": "misconception_undeclared_source",
+          "misconception_text": "A learner may treat an undeclared reference as evidence.",
+          "evidence_signal": "The evidence signal cites a source ID that is not declared by the card.",
+          "source_ids": ["S999"],
+          "severity": "high",
+          "teacher_response": "Require a declared source ID or remove the evidence item.",
+          "reviewer_note": "Synthetic planning evidence only; not a record about a real learner."
+        }
+      ]
+    },
+    {
+      "card_id": "assessment_gate_card_misconception_undeclared_source",
+      "card_type": "assessment_gate_card",
+      "title": "Assessment Gate Placeholder",
+      "audience": "curriculum_reviewer",
+      "grade_band": "higher_ed",
+      "purpose": "Complete the lane shape for the invalid fixture.",
+      "source_binding": {
+        "source_policy": "no_new_claims",
+        "allowed_source_ids": ["S001"],
+        "blocked_claims_policy": "Do not introduce claims outside packet sources."
+      },
+      "adaptation_actions": ["Require declared sources for misconception evidence."],
+      "risks": [],
+      "human_review": {
+        "status": "needs_human_review",
+        "required_roles": ["curriculum_reviewer"],
+        "review_notes": ["Placeholder gate."]
+      },
+      "outputs": [
+        {
+          "output_id": "gate_placeholder_output",
+          "output_type": "gate_report",
+          "description": "Placeholder gate report."
+        }
+      ],
+      "assessment_gates": [
+        {
+          "gate_id": "misconception_source_binding_gate",
+          "gate_name": "Misconception evidence uses declared sources",
+          "gate_status": "fail",
+          "evidence_required": ["Misconception evidence source IDs", "Allowed source ID list"]
+        }
+      ]
+    }
+  ]
+}

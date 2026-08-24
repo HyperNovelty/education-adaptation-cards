@@ -11,11 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from education_adaptation_cards import CARD_RENDER_ORDER, load_json, validate_doc
-
-
-def card_sort_key(card: dict[str, Any]) -> tuple[int, str]:
-    return (CARD_RENDER_ORDER.index(card["card_type"]), card["card_id"])
+from education_adaptation_cards import card_sort_key, load_json, validate_doc
 
 
 def render_bullets(items: list[str]) -> list[str]:
