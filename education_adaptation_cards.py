@@ -16,6 +16,7 @@ INVALID_EXAMPLES = sorted((ROOT / "examples" / "invalid").glob("*.json"))
 TARGET_SYSTEMS = {"ipublishos", "agent_os", "ipublishos_agent_os_bridge"}
 PACKET_STATUSES = {"draft_only", "needs_human_review", "approved_for_internal_review", "rejected"}
 LOCAL_REVIEW_ONLY_STATUSES = {"draft_only", "needs_human_review"}
+LOCAL_REVIEW_ONLY_STATUS_ORDER = ["draft_only", "needs_human_review"]
 CARD_TYPES = {"teacher_card", "student_card", "assessment_gate_card"}
 CARD_RENDER_ORDER = ["teacher_card", "student_card", "assessment_gate_card"]
 AUDIENCES = {"teacher", "student", "reviewer", "curriculum_reviewer"}
@@ -59,6 +60,11 @@ FORBIDDEN_RESPONSIBLE_USE_PATTERNS = [
         "must not claim classroom clearance",
     ),
 ]
+
+
+def card_sort_key(card: dict[str, Any]) -> tuple[int, str]:
+    """Return the deterministic reviewer-facing card order."""
+    return (CARD_RENDER_ORDER.index(card["card_type"]), card["card_id"])
 
 
 def load_json(path: Path) -> Any:

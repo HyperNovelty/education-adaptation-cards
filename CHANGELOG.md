@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-24
+
+- Added `scripts/report_review_boundaries.py`, a stdlib CLI that inventories local-only packet, dossier, review-gate, and card human-review states with human or deterministic JSON output.
+- Added a checked-in public-domain review-boundary JSON report plus check mode for freshness validation.
+- Added public-safe invalid fixtures and regression tests for promoted packet status, dossier mission review state, and dossier review-gate status.
+
 ## 2026-08-03
 
 - Hardened local validation for learner-question and misconception-evidence source bindings, including duplicate source IDs, status/source consistency, and undeclared card source references.

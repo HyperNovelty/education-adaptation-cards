@@ -1,0 +1,72 @@
+{
+  "report_type": "education_adaptation_cards.review_boundaries",
+  "source_path": "examples/education_cards.public_domain_folder_dossier.json",
+  "allowed_authority": "local_review_only",
+  "items": [
+    {
+      "label": "review_packet.packet_status",
+      "location": "review_packet.packet_status",
+      "observed_status": "draft_only",
+      "allowed_statuses": [
+        "draft_only",
+        "needs_human_review"
+      ],
+      "result": "pass"
+    },
+    {
+      "label": "learning_dossier.learning_mission.review_state",
+      "location": "learning_dossier.learning_mission.review_state",
+      "observed_status": "needs_human_review",
+      "allowed_statuses": [
+        "draft_only",
+        "needs_human_review"
+      ],
+      "result": "pass"
+    },
+    {
+      "label": "learning_dossier.review_gate.status",
+      "location": "learning_dossier.review_gate.status",
+      "observed_status": "needs_human_review",
+      "allowed_statuses": [
+        "draft_only",
+        "needs_human_review"
+      ],
+      "result": "pass"
+    },
+    {
+      "label": "card:teacher_card_alice_source_folder.human_review.status",
+      "location": "education_adaptation_cards[0].human_review.status",
+      "observed_status": "needs_human_review",
+      "allowed_statuses": [
+        "draft_only",
+        "needs_human_review"
+      ],
+      "result": "pass"
+    },
+    {
+      "label": "card:student_card_alice_source_check.human_review.status",
+      "location": "education_adaptation_cards[1].human_review.status",
+      "observed_status": "needs_human_review",
+      "allowed_statuses": [
+        "draft_only",
+        "needs_human_review"
+      ],
+      "result": "pass"
+    },
+    {
+      "label": "card:assessment_gate_card_alice_folder.human_review.status",
+      "location": "education_adaptation_cards[2].human_review.status",
+      "observed_status": "needs_human_review",
+      "allowed_statuses": [
+        "draft_only",
+        "needs_human_review"
+      ],
+      "result": "pass"
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "pass": 6,
+    "violations": 0
+  }
+}

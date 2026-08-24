@@ -24,6 +24,20 @@ Gutenberg URL with a short excerpt only. The folder dossier makes the mission,
 source/reference sheet, question map, practice task, evidence checklist, and
 review gate visible before the three-card lane.
 
+## Review the Boundary Surface
+
+Run:
+
+```bash
+python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
+```
+
+The report inventories packet status, dossier mission review state, dossier
+review gate status, and each card's human review status. Every listed state must
+be `draft_only` or `needs_human_review`; promoted states fail closed and are
+reported as violations.
+
 ## What the Validator Checks
 
 Run:
@@ -76,9 +90,11 @@ A public-domain folder demo render is available at
    expected.
 3. Open the public-domain fixture and confirm the source sheet identifies title,
    creator, publication year, public-domain basis, URL, and minimal excerpt.
-4. Open the rendered dossier and confirm it says local review material only, not
+4. Run the review-boundary report and confirm every packet, dossier, gate, and
+   card state remains local-only.
+5. Open the rendered dossier and confirm it says local review material only, not
    classroom-cleared, and no LMS/network/account/publish/student-data actions are
    authorized.
 
-That is the whole demo: a small fixture contract, a local validator, and a
-deterministic renderer for reviewer inspection.
+That is the whole demo: a small fixture contract, a local validator, a
+review-boundary inventory, and a deterministic renderer for reviewer inspection.

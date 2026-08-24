@@ -4,7 +4,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Near-term maintainer work
 
-- Add more negative fixtures that prevent cards from silently moving from draft/review states into approved learner-facing states.
+- Add more negative fixtures for future authority layers before they can silently move from draft/review states into approved learner-facing states.
 - Keep the project local/reference-only: no student data, no LMS integration, no classroom deployment, and no account actions.
 
 ## Program fit
@@ -14,7 +14,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Good first issues
 
-- Add invalid fixtures for future review-state boundary regressions.
+- Add renderer/report fixtures for future review-state boundary regressions.
 
 ## Recently completed
 
@@ -25,3 +25,5 @@ This repository explores the idea that the next classroom may be a folder: a dur
 - Added a public-domain folder-based learning dossier example with mission, source/reference sheet, question map, practice task, evidence checklist, and review gate metadata.
 - Hardened card-level learner-question and misconception-evidence source bindings, including duplicate source IDs, malformed status/source combinations, and undeclared source references.
 - Added invalid fixtures for source-bound learner questions without source IDs and misconception evidence with undeclared source IDs.
+- Added a deterministic review-boundary report CLI with checked-in JSON freshness checks for packet, dossier, review-gate, and card human-review states.
+- Added packet, dossier mission, and dossier review-gate negative fixtures for promoted review states.
