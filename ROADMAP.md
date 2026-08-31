@@ -5,6 +5,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 ## Near-term maintainer work
 
 - Add more negative fixtures for future authority layers before they can silently move from draft/review states into approved learner-facing states.
+- Keep renderer and report regression fixtures fresh for every valid review-state surface.
 - Keep the project local/reference-only: no student data, no LMS integration, no classroom deployment, and no account actions.
 
 ## Program fit
@@ -14,7 +15,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Good first issues
 
-- Add renderer/report fixtures for future review-state boundary regressions.
+- Add more invalid examples for new local-only authority fields before renderer support is added.
 
 ## Recently completed
 
@@ -27,3 +28,5 @@ This repository explores the idea that the next classroom may be a folder: a dur
 - Added invalid fixtures for source-bound learner questions without source IDs and misconception evidence with undeclared source IDs.
 - Added a deterministic review-boundary report CLI with checked-in JSON freshness checks for packet, dossier, review-gate, and card human-review states.
 - Added packet, dossier mission, and dossier review-gate negative fixtures for promoted review states.
+- Added renderer fail-closed review-boundary handling so promoted or invalid fixtures exit with labeled `render_boundary=failed` output before markdown writes.
+- Added checked-in review-boundary JSON reports for the review-packet and minimal fixtures, with unittest freshness checks.

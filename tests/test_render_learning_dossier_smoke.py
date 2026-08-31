@@ -12,6 +12,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "render_learning_dossier.py"
 FIXTURE = ROOT / "examples" / "education_cards.minimal.json"
+REVIEW_PACKET_FIXTURE = ROOT / "examples" / "education_cards.review_packet_fixture.json"
+REVIEW_PACKET_RENDER = ROOT / "examples" / "rendered" / "education_demo_dossier.md"
 PUBLIC_DOMAIN_FIXTURE = ROOT / "examples" / "education_cards.public_domain_folder_dossier.json"
 PUBLIC_DOMAIN_RENDER = ROOT / "examples" / "rendered" / "public_domain_learning_dossier.md"
 
@@ -51,6 +53,14 @@ class RenderLearningDossierSmokeTests(unittest.TestCase):
         self.assertIn("pre_1929_public_domain_us", rendered)
         self.assertIn("### Evidence Checklist", rendered)
         self.assertIn("### Review Gate", rendered)
+
+    def test_review_packet_render_matches_checked_in_demo(self) -> None:
+        rendered = render_fixture(REVIEW_PACKET_FIXTURE)
+        checked_in = REVIEW_PACKET_RENDER.read_text(encoding="utf-8")
+        self.assertEqual(checked_in, rendered)
+        self.assertIn("Teacher Card: Source-Locked Lesson Planner", rendered)
+        self.assertIn("Student Card: Guided Source Check", rendered)
+        self.assertIn("Assessment/Gate Card: Education Lane Packet Release", rendered)
 
     def test_check_mode_succeeds_when_checked_in_render_is_current(self) -> None:
         result = subprocess.run(

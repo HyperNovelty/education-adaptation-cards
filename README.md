@@ -13,6 +13,8 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `examples/rendered/education_demo_dossier.md` — generated markdown demo from the review packet fixture.
 - `examples/rendered/public_domain_learning_dossier.md` — generated markdown demo from the public-domain folder dossier fixture.
 - `examples/rendered/public_domain_review_boundaries.json` — checked-in deterministic review-boundary report for the public-domain folder dossier.
+- `examples/rendered/review_packet_review_boundaries.json` — checked-in deterministic review-boundary report for the review-packet fixture.
+- `examples/rendered/minimal_review_boundaries.json` — checked-in deterministic review-boundary report for the minimal fixture.
 - `examples/invalid/dossier_learning_mission_review_state_approved.json` — negative fixture proving dossier mission review state cannot move beyond local review.
 - `examples/invalid/dossier_review_gate_status_approved.json` — negative fixture proving dossier review gates cannot move beyond local review.
 - `examples/invalid/dossier_review_gate_without_evidence.json` — negative fixture proving dossier review gates must name required evidence.
@@ -33,6 +35,8 @@ This prototype is local review material only. It does not publish, contact anyon
 
 The only allowed review authority states in runnable local fixtures are `draft_only` and `needs_human_review`. Packet status, dossier mission review state, dossier review gate status, and every card `human_review.status` fail closed if promoted beyond that boundary.
 
+The markdown renderer also fails closed before writing output: malformed JSON, non-object JSON, validation failures, and promoted review states exit nonzero with a labeled `render_boundary=failed` line. Successful renders do not add banners or extra sections beyond the deterministic dossier markdown.
+
 Assessment artifacts are review aids, not grading automation, diagnosis, or student surveillance; see `docs/ASSESSMENT_BOUNDARY.md`.
 
 Learner questions and misconception evidence are synthetic, source-bound review objects. Question and evidence source IDs must be unique and declared in the card's source binding. They are not student records, learner profiles, grading inputs, or classroom-clearance claims.
@@ -43,6 +47,8 @@ Learner questions and misconception evidence are synthetic, source-bound review 
 python3 tests/validate_education_adaptation_cards.py
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_review_boundaries.json
 python3 scripts/render_learning_dossier.py --input examples/education_cards.review_packet_fixture.json --output /tmp/education_demo_dossier.md
 python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --output /tmp/public_domain_learning_dossier.md
 sed -n '1,80p' /tmp/education_demo_dossier.md
@@ -59,8 +65,10 @@ python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/e
 python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json >/tmp/education_cards.public_domain_folder_dossier.validated.json
 python3 tests/validate_education_adaptation_cards.py
 python3 -m unittest discover -s tests -p 'test_*.py'
-python3 -m pytest -q
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_review_boundaries.json
+python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.md
 ```
 
 
@@ -73,6 +81,8 @@ python3 tests/validate_education_adaptation_cards.py
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --format json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_review_boundaries.json
 python3 scripts/render_learning_dossier.py examples/education_cards.review_packet_fixture.json
 python3 scripts/render_learning_dossier.py examples/education_cards.public_domain_folder_dossier.json
 python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.md

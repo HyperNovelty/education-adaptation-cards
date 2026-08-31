@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-31
+
+- Hardened `scripts/render_learning_dossier.py` to fail closed with labeled `render_boundary=failed` output for malformed JSON, non-object JSON, validation failures, and promoted review-boundary states before any markdown write or check mutation.
+- Added checked-in deterministic review-boundary JSON reports for the review-packet and minimal fixtures.
+- Added unittest renderer/report regressions covering promoted packet, dossier mission, dossier gate, and card states plus freshness checks for all checked-in boundary reports and the public-domain markdown render.
+
 ## 2026-08-24
 
 - Added `scripts/report_review_boundaries.py`, a stdlib CLI that inventories local-only packet, dossier, review-gate, and card human-review states with human or deterministic JSON output.

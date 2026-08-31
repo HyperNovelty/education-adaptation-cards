@@ -21,6 +21,8 @@ Fixtures:
 - `examples/education_cards.public_domain_folder_dossier.json` — complete folder-based dossier using a pre-1929 public-domain text source.
 - `examples/education_cards.review_packet_fixture.json` — fuller mock attachment targeting the existing Voice-to-Source review packet fixture.
 - `examples/rendered/public_domain_review_boundaries.json` — deterministic JSON report generated from the public-domain fixture for freshness checks.
+- `examples/rendered/review_packet_review_boundaries.json` — deterministic JSON report generated from the review-packet fixture.
+- `examples/rendered/minimal_review_boundaries.json` — deterministic JSON report generated from the minimal fixture.
 
 ## Contract shape
 
@@ -93,9 +95,22 @@ Run from the repository root:
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --format json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_review_boundaries.json
 ```
 
 The report inventories `review_packet.packet_status`, optional `learning_dossier.learning_mission.review_state`, optional `learning_dossier.review_gate.status`, and each card's `human_review.status` in deterministic reviewer order. Each item includes a label, location, observed status, allowed status set, and pass/violation result. The command exits nonzero for malformed JSON, stale checked-in JSON, validation failures, or any state outside `draft_only` and `needs_human_review`.
+
+## Renderer fail-closed boundary
+
+Run from the repository root:
+
+```bash
+python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.md
+python3 scripts/render_learning_dossier.py --input examples/invalid/packet_status_approved_internal_review.json --output /tmp/should_not_write.md
+```
+
+The renderer validates before writing or checking markdown. Malformed JSON, non-object JSON, validation failures, and promoted packet/dossier/card review states exit nonzero with `render_boundary=failed`. Promoted states are labeled with the same review-boundary inventory labels used by `scripts/report_review_boundaries.py`; other validation failures keep the validator's reason.
 
 ## Learning dossier extension
 
@@ -135,6 +150,7 @@ python3 -m json.tool examples/education_cards.minimal.json >/tmp/education_cards
 python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/education_cards.review_packet_fixture.validated.json
 python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json >/tmp/education_cards.public_domain_folder_dossier.validated.json
 python3 tests/validate_education_adaptation_cards.py
+python3 -m unittest discover -s tests -p 'test_*.py'
 ```
 
 The validator and review-boundary reporter intentionally use only the Python standard library. They are not general JSON Schema or compliance engines; they validate this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, card-level source-binding uniqueness and source-reference declarations, dossier source/evidence links, blocked public-safety claims, and assessment gate requirements.

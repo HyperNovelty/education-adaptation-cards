@@ -31,6 +31,8 @@ Run:
 ```bash
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
+python3 scripts/report_review_boundaries.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_review_boundaries.json
 ```
 
 The report inventories packet status, dossier mission review state, dossier
@@ -68,12 +70,18 @@ Run:
 ```bash
 python3 scripts/render_learning_dossier.py --input examples/education_cards.review_packet_fixture.json --output /tmp/education_demo_dossier.md
 python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --output /tmp/public_domain_learning_dossier.md
+python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.md
 ```
 
 The renderer converts the fixture into deterministic Markdown. It preserves the
 review packet context, safety mode, card purposes, source-binding rules, risks,
 human review notes, outputs, assessment gates, and any top-level folder dossier
 metadata.
+
+The renderer validates before writing markdown. Malformed JSON, non-object JSON,
+ordinary validation failures, and promoted review states exit nonzero with a
+labeled `render_boundary=failed` line; promoted states use the same packet,
+dossier, gate, and card labels as the review-boundary report.
 
 A checked-in demo render is available at
 `examples/rendered/education_demo_dossier.md`. It is generated from
@@ -95,6 +103,8 @@ A public-domain folder demo render is available at
 5. Open the rendered dossier and confirm it says local review material only, not
    classroom-cleared, and no LMS/network/account/publish/student-data actions are
    authorized.
+6. Optionally run an invalid fixture through the renderer and confirm it reports
+   `render_boundary=failed` without writing markdown.
 
 That is the whole demo: a small fixture contract, a local validator, a
 review-boundary inventory, and a deterministic renderer for reviewer inspection.

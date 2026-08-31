@@ -11,7 +11,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "report_review_boundaries.py"
+MINIMAL_FIXTURE = ROOT / "examples" / "education_cards.minimal.json"
+REVIEW_PACKET_FIXTURE = ROOT / "examples" / "education_cards.review_packet_fixture.json"
 PUBLIC_DOMAIN_FIXTURE = ROOT / "examples" / "education_cards.public_domain_folder_dossier.json"
+MINIMAL_REPORT = ROOT / "examples" / "rendered" / "minimal_review_boundaries.json"
+REVIEW_PACKET_REPORT = ROOT / "examples" / "rendered" / "review_packet_review_boundaries.json"
 PUBLIC_DOMAIN_REPORT = ROOT / "examples" / "rendered" / "public_domain_review_boundaries.json"
 INVALID = ROOT / "examples" / "invalid"
 
@@ -53,6 +57,23 @@ class ReviewBoundaryReportTests(unittest.TestCase):
         checked = run_report("--input", str(PUBLIC_DOMAIN_FIXTURE), "--check", str(PUBLIC_DOMAIN_REPORT))
         self.assertEqual(0, checked.returncode, checked.stderr)
         self.assertIn("review_boundary_check=ok", checked.stdout)
+
+    def test_remaining_valid_fixture_reports_are_deterministic_and_check_passes(self) -> None:
+        cases = [
+            (REVIEW_PACKET_FIXTURE, REVIEW_PACKET_REPORT),
+            (MINIMAL_FIXTURE, MINIMAL_REPORT),
+        ]
+        for fixture, checked_in_report in cases:
+            with self.subTest(fixture=fixture.name):
+                first = run_report("--input", str(fixture), "--format", "json")
+                second = run_report("--input", str(fixture), "--format", "json")
+                self.assertEqual(0, first.returncode, first.stderr)
+                self.assertEqual(first.stdout, second.stdout)
+                self.assertEqual(checked_in_report.read_text(encoding="utf-8"), first.stdout)
+
+                checked = run_report("--input", str(fixture), "--check", str(checked_in_report))
+                self.assertEqual(0, checked.returncode, checked.stderr)
+                self.assertIn("review_boundary_check=ok", checked.stdout)
 
     def assert_boundary_violation(self, fixture: str, label: str, status: str) -> None:
         result = run_report("--input", str(INVALID / fixture), "--format", "json")
