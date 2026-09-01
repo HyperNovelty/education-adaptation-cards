@@ -4,7 +4,6 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Near-term maintainer work
 
-- Add more negative fixtures for future authority layers before they can silently move from draft/review states into approved learner-facing states.
 - Keep renderer and report regression fixtures fresh for every valid review-state surface.
 - Keep the project local/reference-only: no student data, no LMS integration, no classroom deployment, and no account actions.
 
@@ -15,10 +14,13 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Good first issues
 
-- Add more invalid examples for new local-only authority fields before renderer support is added.
+- Add more invalid examples for future local-only surfaces as new field names are proposed, before any renderer support is added.
 
 ## Recently completed
 
+- Added a named forbidden future-authority field gate for learner identity, student records, LMS fields, classroom deployment, gradebook writes, automated grading, and auto-publish.
+- Added public-safe invalid fixtures for `review_packet.student_id`, card `lms_export`, dossier `classroom_deployment`, and assessment-gate `gradebook_write`.
+- Added a deterministic forbidden-authority inventory CLI and checked-in freshness report.
 - Added schema fields for learner questions that remain unanswered or insufficiently sourced.
 - Added misconception evidence objects with source IDs, severity, and teacher/reviewer response.
 - Added a negative fixture for a card that has learner questions without misconception evidence.

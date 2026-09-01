@@ -7,6 +7,12 @@ activities, or assessment-gate checklists.
 They are not grading automation, diagnosis, student surveillance, or approval for
 classroom use.
 
+Named future-authority fields fail closed before generic key validation. The
+current forbidden names cover learner identity, student records, LMS authority,
+classroom deployment authority, gradebook writes, automated grading, and
+auto-publish. Failures include `forbidden_future_authority_field=<field>` so the
+reason is visible to maintainers and renderer callers.
+
 ## What Cards May Do
 
 - summarize a synthetic fixture for reviewer inspection
@@ -21,6 +27,10 @@ classroom use.
 - diagnose learners or infer protected/sensitive traits
 - monitor students, track behavior, or create surveillance records
 - collect student data, assessment records, rosters, LMS exports, or accounts
+- add `student_id`, `learner_id`, `student_record`, `student_records`,
+  `lms_export`, `lms_sync`, `lms_course_id`, `classroom_deployment`,
+  `classroom_deployment_status`, `gradebook_write`, `auto_grade`, or
+  `auto_publish`
 - claim final approval without human review
 - claim legal, privacy, accessibility, curriculum, or compliance readiness
 

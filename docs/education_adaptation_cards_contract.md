@@ -8,6 +8,7 @@ Local-only implementation-facing mock contract for adding education adaptation c
 - Artifacts are review-packet attachments, not classroom deployment artifacts.
 - No network calls, third-party package installs, public publishing, LMS/account actions, credentials, outreach, or student data handling.
 - Packet, dossier, review-gate, and card human-review states remain `draft_only` or `needs_human_review`. This repository does not promote, approve, publish, or clear artifacts for classroom use.
+- Named future-authority fields for learner identity, student records, LMS actions, classroom deployment, gradebook writes, automated grading, and auto-publish fail closed before generic object-key validation.
 
 ## Primary artifact
 
@@ -23,6 +24,7 @@ Fixtures:
 - `examples/rendered/public_domain_review_boundaries.json` — deterministic JSON report generated from the public-domain fixture for freshness checks.
 - `examples/rendered/review_packet_review_boundaries.json` — deterministic JSON report generated from the review-packet fixture.
 - `examples/rendered/minimal_review_boundaries.json` — deterministic JSON report generated from the minimal fixture.
+- `examples/rendered/forbidden_authority_fields.json` — deterministic JSON inventory of forbidden future-authority field names and reasons.
 
 ## Contract shape
 
@@ -101,6 +103,18 @@ python3 scripts/report_review_boundaries.py --input examples/education_cards.min
 
 The report inventories `review_packet.packet_status`, optional `learning_dossier.learning_mission.review_state`, optional `learning_dossier.review_gate.status`, and each card's `human_review.status` in deterministic reviewer order. Each item includes a label, location, observed status, allowed status set, and pass/violation result. The command exits nonzero for malformed JSON, stale checked-in JSON, validation failures, or any state outside `draft_only` and `needs_human_review`.
 
+## Forbidden future-authority fields
+
+Run from the repository root:
+
+```bash
+python3 scripts/report_forbidden_authority_fields.py
+python3 scripts/report_forbidden_authority_fields.py --input examples/education_cards.minimal.json
+python3 scripts/report_forbidden_authority_fields.py --check examples/rendered/forbidden_authority_fields.json
+```
+
+The validator recursively scans JSON objects before exact-key and additional-property checks. If a named future-authority key appears anywhere, validation fails with `forbidden_future_authority_field=<field>` and the field's reason. Current named prohibitions cover learner identity, student records, LMS export/sync/course IDs, classroom deployment/status, gradebook writes, automated grading, and auto-publish. The CLI inventories those names, checks the checked-in inventory without writing it, and can scan one fixture read-only.
+
 ## Renderer fail-closed boundary
 
 Run from the repository root:
@@ -110,7 +124,7 @@ python3 scripts/render_learning_dossier.py --input examples/education_cards.publ
 python3 scripts/render_learning_dossier.py --input examples/invalid/packet_status_approved_internal_review.json --output /tmp/should_not_write.md
 ```
 
-The renderer validates before writing or checking markdown. Malformed JSON, non-object JSON, validation failures, and promoted packet/dossier/card review states exit nonzero with `render_boundary=failed`. Promoted states are labeled with the same review-boundary inventory labels used by `scripts/report_review_boundaries.py`; other validation failures keep the validator's reason.
+The renderer validates before writing or checking markdown. Malformed JSON, non-object JSON, validation failures, forbidden future-authority fields, and promoted packet/dossier/card review states exit nonzero with `render_boundary=failed`. Promoted states are labeled with the same review-boundary inventory labels used by `scripts/report_review_boundaries.py`; other validation failures keep the validator's reason.
 
 ## Learning dossier extension
 
@@ -149,8 +163,9 @@ python3 -m json.tool schemas/education_adaptation_cards.schema.json >/tmp/educat
 python3 -m json.tool examples/education_cards.minimal.json >/tmp/education_cards.minimal.validated.json
 python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/education_cards.review_packet_fixture.validated.json
 python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json >/tmp/education_cards.public_domain_folder_dossier.validated.json
-python3 tests/validate_education_adaptation_cards.py
 python3 -m unittest discover -s tests -p 'test_*.py'
+python3 tests/validate_education_adaptation_cards.py
+python3 scripts/report_forbidden_authority_fields.py --check examples/rendered/forbidden_authority_fields.json
 ```
 
-The validator and review-boundary reporter intentionally use only the Python standard library. They are not general JSON Schema or compliance engines; they validate this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, learner-question/misconception-evidence coupling, card-level source-binding uniqueness and source-reference declarations, dossier source/evidence links, blocked public-safety claims, and assessment gate requirements.
+The validator and report CLIs intentionally use only the Python standard library. They are not general JSON Schema or compliance engines; they validate this prototype's current schema markers, fixture structure, repo-local path boundary, complete card-type set, local-only review states, named future-authority field prohibitions, learner-question/misconception-evidence coupling, card-level source-binding uniqueness and source-reference declarations, dossier source/evidence links, blocked public-safety claims, and assessment gate requirements.

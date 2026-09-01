@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-01
+
+- Added a validator-level forbidden future-authority field scan that fails before generic key checks for learner identity, student records, LMS fields, classroom deployment, gradebook writes, automated grading, and auto-publish.
+- Added public-safe invalid fixtures for packet `student_id`, card `lms_export`, dossier `classroom_deployment`, and assessment-gate `gradebook_write`.
+- Added `scripts/report_forbidden_authority_fields.py` and a checked-in deterministic inventory at `examples/rendered/forbidden_authority_fields.json`.
+
 ## 2026-08-31
 
 - Hardened `scripts/render_learning_dossier.py` to fail closed with labeled `render_boundary=failed` output for malformed JSON, non-object JSON, validation failures, and promoted review-boundary states before any markdown write or check mutation.

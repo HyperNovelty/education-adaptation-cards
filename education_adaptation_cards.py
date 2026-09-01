@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from datetime import datetime
+from types import MappingProxyType
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +39,22 @@ QUESTION_STATUSES = {"unanswered", "partially_sourced", "source_bound", "out_of_
 MISCONCEPTION_SEVERITIES = {"low", "medium", "high", "unknown"}
 PUBLIC_DOMAIN_STATUSES = {"pre_1929_public_domain_us", "us_federal_government_work"}
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_\-]{2,120}$")
+FORBIDDEN_FUTURE_AUTHORITY_FIELDS = MappingProxyType(
+    {
+        "auto_grade": "must not add grading authority",
+        "auto_publish": "must not add auto-publish authority",
+        "classroom_deployment": "must not add classroom deployment authority",
+        "classroom_deployment_status": "must not add classroom deployment authority",
+        "gradebook_write": "must not add grading authority",
+        "learner_id": "must not collect learner identity",
+        "lms_course_id": "must not add LMS authority",
+        "lms_export": "must not add LMS authority",
+        "lms_sync": "must not add LMS authority",
+        "student_id": "must not collect learner identity",
+        "student_record": "must not collect student records",
+        "student_records": "must not collect student records",
+    }
+)
 FORBIDDEN_RESPONSIBLE_USE_PATTERNS = [
     (
         re.compile(r"\b(assign|issue|calculate|produce)\s+(a\s+)?final\s+grade\b", re.IGNORECASE),
@@ -74,6 +91,30 @@ def load_json(path: Path) -> Any:
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
+
+
+def find_forbidden_future_authority_fields(value: Any, label: str) -> list[dict[str, str]]:
+    findings: list[dict[str, str]] = []
+    if isinstance(value, dict):
+        for key, item in value.items():
+            location = f"{label}.{key}"
+            reason = FORBIDDEN_FUTURE_AUTHORITY_FIELDS.get(key)
+            if reason:
+                findings.append({"field": key, "location": location, "reason": reason})
+            findings.extend(find_forbidden_future_authority_fields(item, location))
+    elif isinstance(value, list):
+        for idx, item in enumerate(value):
+            findings.extend(find_forbidden_future_authority_fields(item, f"{label}[{idx}]"))
+    return findings
+
+
+def validate_no_forbidden_future_authority_fields(value: Any, label: str) -> None:
+    findings = find_forbidden_future_authority_fields(value, label)
+    if findings:
+        finding = findings[0]
+        raise AssertionError(
+            f"{finding['location']} forbidden_future_authority_field={finding['field']} {finding['reason']}"
+        )
 
 
 def parse_timestamp(value: Any, label: str) -> None:
@@ -440,6 +481,7 @@ def validate_card(card: Any, label: str) -> str:
 def validate_doc(doc: Any, label: str) -> dict[str, int]:
     required = {"generated_at", "safety_mode", "target_system", "review_packet", "education_adaptation_cards"}
     require(isinstance(doc, dict), f"{label} must be object")
+    validate_no_forbidden_future_authority_fields(doc, label)
     require(required.issubset(doc), f"{label} missing top-level keys: {sorted(required - set(doc))}")
     require(set(doc).issubset(required | {"learning_dossier"}), f"{label} top-level keys mismatch: {sorted(set(doc))}")
     validate_responsible_use_text(doc, label)

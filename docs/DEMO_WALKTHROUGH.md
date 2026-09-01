@@ -40,6 +40,18 @@ review gate status, and each card's human review status. Every listed state must
 be `draft_only` or `needs_human_review`; promoted states fail closed and are
 reported as violations.
 
+Then inspect the named future-authority inventory:
+
+```bash
+python3 scripts/report_forbidden_authority_fields.py
+python3 scripts/report_forbidden_authority_fields.py --check examples/rendered/forbidden_authority_fields.json
+```
+
+Those names are reserved for unsupported authority layers: learner identity,
+student records, LMS fields, classroom deployment, gradebook writes, automated
+grading, and auto-publish. If a fixture includes one, validation fails with
+`forbidden_future_authority_field=<field>` before generic key validation.
+
 ## What the Validator Checks
 
 Run:
@@ -59,6 +71,7 @@ current contract markers, including:
 - assessment gates are present where required
 - folder dossiers, when present, link questions, practice tasks, evidence
   checklist items, and review-gate evidence IDs to declared sources/evidence
+- named future-authority fields fail with specific forbidden-field reasons
 - invalid fixtures fail for clear local-review reasons
 
 It is not a general compliance checker or curriculum approval engine.
@@ -100,11 +113,13 @@ A public-domain folder demo render is available at
    creator, publication year, public-domain basis, URL, and minimal excerpt.
 4. Run the review-boundary report and confirm every packet, dossier, gate, and
    card state remains local-only.
-5. Open the rendered dossier and confirm it says local review material only, not
+5. Run the forbidden-authority inventory check and confirm it is fresh.
+6. Open the rendered dossier and confirm it says local review material only, not
    classroom-cleared, and no LMS/network/account/publish/student-data actions are
    authorized.
-6. Optionally run an invalid fixture through the renderer and confirm it reports
+7. Optionally run an invalid fixture through the renderer and confirm it reports
    `render_boundary=failed` without writing markdown.
 
 That is the whole demo: a small fixture contract, a local validator, a
-review-boundary inventory, and a deterministic renderer for reviewer inspection.
+review-boundary inventory, a forbidden-authority inventory, and a deterministic
+renderer for reviewer inspection.

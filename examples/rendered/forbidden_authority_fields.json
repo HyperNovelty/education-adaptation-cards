@@ -1,0 +1,53 @@
+{
+  "report_type": "education_adaptation_cards.forbidden_future_authority_fields",
+  "fields": [
+    {
+      "field": "auto_grade",
+      "reason": "must not add grading authority"
+    },
+    {
+      "field": "auto_publish",
+      "reason": "must not add auto-publish authority"
+    },
+    {
+      "field": "classroom_deployment",
+      "reason": "must not add classroom deployment authority"
+    },
+    {
+      "field": "classroom_deployment_status",
+      "reason": "must not add classroom deployment authority"
+    },
+    {
+      "field": "gradebook_write",
+      "reason": "must not add grading authority"
+    },
+    {
+      "field": "learner_id",
+      "reason": "must not collect learner identity"
+    },
+    {
+      "field": "lms_course_id",
+      "reason": "must not add LMS authority"
+    },
+    {
+      "field": "lms_export",
+      "reason": "must not add LMS authority"
+    },
+    {
+      "field": "lms_sync",
+      "reason": "must not add LMS authority"
+    },
+    {
+      "field": "student_id",
+      "reason": "must not collect learner identity"
+    },
+    {
+      "field": "student_record",
+      "reason": "must not collect student records"
+    },
+    {
+      "field": "student_records",
+      "reason": "must not collect student records"
+    }
+  ]
+}
