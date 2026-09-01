@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from datetime import datetime
+from types import MappingProxyType
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,7 @@ INVALID_EXAMPLES = sorted((ROOT / "examples" / "invalid").glob("*.json"))
 TARGET_SYSTEMS = {"ipublishos", "agent_os", "ipublishos_agent_os_bridge"}
 PACKET_STATUSES = {"draft_only", "needs_human_review", "approved_for_internal_review", "rejected"}
 LOCAL_REVIEW_ONLY_STATUSES = {"draft_only", "needs_human_review"}
+LOCAL_REVIEW_ONLY_STATUS_ORDER = ["draft_only", "needs_human_review"]
 CARD_TYPES = {"teacher_card", "student_card", "assessment_gate_card"}
 CARD_RENDER_ORDER = ["teacher_card", "student_card", "assessment_gate_card"]
 AUDIENCES = {"teacher", "student", "reviewer", "curriculum_reviewer"}
@@ -37,6 +39,22 @@ QUESTION_STATUSES = {"unanswered", "partially_sourced", "source_bound", "out_of_
 MISCONCEPTION_SEVERITIES = {"low", "medium", "high", "unknown"}
 PUBLIC_DOMAIN_STATUSES = {"pre_1929_public_domain_us", "us_federal_government_work"}
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_\-]{2,120}$")
+FORBIDDEN_FUTURE_AUTHORITY_FIELDS = MappingProxyType(
+    {
+        "auto_grade": "must not add grading authority",
+        "auto_publish": "must not add auto-publish authority",
+        "classroom_deployment": "must not add classroom deployment authority",
+        "classroom_deployment_status": "must not add classroom deployment authority",
+        "gradebook_write": "must not add grading authority",
+        "learner_id": "must not collect learner identity",
+        "lms_course_id": "must not add LMS authority",
+        "lms_export": "must not add LMS authority",
+        "lms_sync": "must not add LMS authority",
+        "student_id": "must not collect learner identity",
+        "student_record": "must not collect student records",
+        "student_records": "must not collect student records",
+    }
+)
 FORBIDDEN_RESPONSIBLE_USE_PATTERNS = [
     (
         re.compile(r"\b(assign|issue|calculate|produce)\s+(a\s+)?final\s+grade\b", re.IGNORECASE),
@@ -61,6 +79,11 @@ FORBIDDEN_RESPONSIBLE_USE_PATTERNS = [
 ]
 
 
+def card_sort_key(card: dict[str, Any]) -> tuple[int, str]:
+    """Return the deterministic reviewer-facing card order."""
+    return (CARD_RENDER_ORDER.index(card["card_type"]), card["card_id"])
+
+
 def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -68,6 +91,30 @@ def load_json(path: Path) -> Any:
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
+
+
+def find_forbidden_future_authority_fields(value: Any, label: str) -> list[dict[str, str]]:
+    findings: list[dict[str, str]] = []
+    if isinstance(value, dict):
+        for key, item in value.items():
+            location = f"{label}.{key}"
+            reason = FORBIDDEN_FUTURE_AUTHORITY_FIELDS.get(key)
+            if reason:
+                findings.append({"field": key, "location": location, "reason": reason})
+            findings.extend(find_forbidden_future_authority_fields(item, location))
+    elif isinstance(value, list):
+        for idx, item in enumerate(value):
+            findings.extend(find_forbidden_future_authority_fields(item, f"{label}[{idx}]"))
+    return findings
+
+
+def validate_no_forbidden_future_authority_fields(value: Any, label: str) -> None:
+    findings = find_forbidden_future_authority_fields(value, label)
+    if findings:
+        finding = findings[0]
+        raise AssertionError(
+            f"{finding['location']} forbidden_future_authority_field={finding['field']} {finding['reason']}"
+        )
 
 
 def parse_timestamp(value: Any, label: str) -> None:
@@ -98,12 +145,25 @@ def require_string_list(value: Any, label: str, *, min_items: int = 0) -> None:
     require(all(isinstance(item, str) and item.strip() for item in value), f"{label} must contain non-empty strings")
 
 
+def require_unique_strings(values: list[str], label: str) -> None:
+    seen: set[str] = set()
+    for value in values:
+        require(value not in seen, f"{label} duplicate source_id: {value}")
+        seen.add(value)
+
+
+def require_declared_source_ids(source_ids: list[str], allowed_source_ids: set[str], label: str) -> None:
+    for source_id in source_ids:
+        require(source_id in allowed_source_ids, f"{label} undeclared source_id: {source_id}")
+
+
 def validate_source_binding(binding: Any, label: str) -> None:
     required = {"source_policy", "allowed_source_ids", "blocked_claims_policy"}
     require(isinstance(binding, dict), f"{label} must be object")
     require(set(binding) == required, f"{label} keys mismatch: {sorted(set(binding))}")
     require(binding["source_policy"] in SOURCE_POLICIES, f"{label}.source_policy invalid")
     require_string_list(binding["allowed_source_ids"], f"{label}.allowed_source_ids")
+    require_unique_strings(binding["allowed_source_ids"], f"{label}.allowed_source_ids")
     require(
         isinstance(binding["blocked_claims_policy"], str) and binding["blocked_claims_policy"].strip(),
         f"{label}.blocked_claims_policy empty",
@@ -144,7 +204,7 @@ def validate_output(output: Any, label: str) -> None:
     require(isinstance(output["description"], str) and output["description"].strip(), f"{label}.description empty")
 
 
-def validate_learner_question(question: Any, label: str) -> None:
+def validate_learner_question(question: Any, label: str, allowed_source_ids: set[str]) -> None:
     required = {"question_id", "question_text", "question_status", "source_ids", "reviewer_note"}
     require(isinstance(question, dict), f"{label} must be object")
     require(set(question) == required, f"{label} keys mismatch: {sorted(set(question))}")
@@ -152,10 +212,22 @@ def validate_learner_question(question: Any, label: str) -> None:
     require(isinstance(question["question_text"], str) and question["question_text"].strip(), f"{label}.question_text empty")
     require(question["question_status"] in QUESTION_STATUSES, f"{label}.question_status invalid")
     require_string_list(question["source_ids"], f"{label}.source_ids")
+    require_unique_strings(question["source_ids"], f"{label}.source_ids")
+    if question["question_status"] in {"source_bound", "partially_sourced"}:
+        require(
+            question["source_ids"],
+            f"{label}.source_ids must be non-empty for {question['question_status']} learner question",
+        )
+    else:
+        require(
+            not question["source_ids"],
+            f"{label}.source_ids must be empty for {question['question_status']} learner question",
+        )
+    require_declared_source_ids(question["source_ids"], allowed_source_ids, f"{label}.source_ids")
     require(isinstance(question["reviewer_note"], str) and question["reviewer_note"].strip(), f"{label}.reviewer_note empty")
 
 
-def validate_misconception_evidence(evidence: Any, label: str) -> None:
+def validate_misconception_evidence(evidence: Any, label: str, allowed_source_ids: set[str]) -> None:
     required = {
         "misconception_id",
         "misconception_text",
@@ -177,6 +249,8 @@ def validate_misconception_evidence(evidence: Any, label: str) -> None:
         f"{label}.evidence_signal empty",
     )
     require_string_list(evidence["source_ids"], f"{label}.source_ids", min_items=1)
+    require_unique_strings(evidence["source_ids"], f"{label}.source_ids")
+    require_declared_source_ids(evidence["source_ids"], allowed_source_ids, f"{label}.source_ids")
     require(evidence["severity"] in MISCONCEPTION_SEVERITIES, f"{label}.severity invalid")
     require(
         isinstance(evidence["teacher_response"], str) and evidence["teacher_response"].strip(),
@@ -358,6 +432,7 @@ def validate_card(card: Any, label: str) -> str:
         require(card["grade_band"] in GRADE_BANDS, f"{label}.grade_band invalid")
     require(isinstance(card["purpose"], str) and card["purpose"].strip(), f"{label}.purpose empty")
     validate_source_binding(card["source_binding"], f"{label}.source_binding")
+    allowed_source_ids = set(card["source_binding"]["allowed_source_ids"])
     require_string_list(card["adaptation_actions"], f"{label}.adaptation_actions", min_items=1)
     risks = card["risks"]
     require(isinstance(risks, list), f"{label}.risks must be array")
@@ -370,12 +445,23 @@ def validate_card(card: Any, label: str) -> str:
         validate_output(output, f"{label}.outputs[{idx}]")
     learner_questions = card.get("learner_questions", [])
     require(isinstance(learner_questions, list), f"{label}.learner_questions must be array when present")
+    learner_question_ids: set[str] = set()
     for idx, question in enumerate(learner_questions):
-        validate_learner_question(question, f"{label}.learner_questions[{idx}]")
+        validate_learner_question(question, f"{label}.learner_questions[{idx}]", allowed_source_ids)
+        question_id = question["question_id"]
+        require(question_id not in learner_question_ids, f"{label}.learner_questions duplicate question_id: {question_id}")
+        learner_question_ids.add(question_id)
     misconception_evidence = card.get("misconception_evidence", [])
     require(isinstance(misconception_evidence, list), f"{label}.misconception_evidence must be array when present")
+    misconception_ids: set[str] = set()
     for idx, evidence in enumerate(misconception_evidence):
-        validate_misconception_evidence(evidence, f"{label}.misconception_evidence[{idx}]")
+        validate_misconception_evidence(evidence, f"{label}.misconception_evidence[{idx}]", allowed_source_ids)
+        misconception_id = evidence["misconception_id"]
+        require(
+            misconception_id not in misconception_ids,
+            f"{label}.misconception_evidence duplicate misconception_id: {misconception_id}",
+        )
+        misconception_ids.add(misconception_id)
     require(
         not learner_questions or misconception_evidence,
         f"{label}.misconception_evidence required when learner_questions are present",
@@ -395,6 +481,7 @@ def validate_card(card: Any, label: str) -> str:
 def validate_doc(doc: Any, label: str) -> dict[str, int]:
     required = {"generated_at", "safety_mode", "target_system", "review_packet", "education_adaptation_cards"}
     require(isinstance(doc, dict), f"{label} must be object")
+    validate_no_forbidden_future_authority_fields(doc, label)
     require(required.issubset(doc), f"{label} missing top-level keys: {sorted(required - set(doc))}")
     require(set(doc).issubset(required | {"learning_dossier"}), f"{label} top-level keys mismatch: {sorted(set(doc))}")
     validate_responsible_use_text(doc, label)

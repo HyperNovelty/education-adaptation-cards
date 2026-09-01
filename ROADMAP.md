@@ -4,8 +4,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Near-term maintainer work
 
-- Strengthen schemas for learner-state beyond source-bound questions, assessment evidence, and review-gate outcomes.
-- Add more negative fixtures that prevent cards from silently moving from draft/review states into approved learner-facing states.
+- Keep renderer and report regression fixtures fresh for every valid review-state surface.
 - Keep the project local/reference-only: no student data, no LMS integration, no classroom deployment, and no account actions.
 
 ## Program fit
@@ -15,12 +14,21 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Good first issues
 
-- Add an invalid fixture for malformed learner-question statuses or misconception evidence missing source IDs.
+- Add more invalid examples for future local-only surfaces as new field names are proposed, before any renderer support is added.
 
 ## Recently completed
 
+- Added a named forbidden future-authority field gate for learner identity, student records, LMS fields, classroom deployment, gradebook writes, automated grading, and auto-publish.
+- Added public-safe invalid fixtures for `review_packet.student_id`, card `lms_export`, dossier `classroom_deployment`, and assessment-gate `gradebook_write`.
+- Added a deterministic forbidden-authority inventory CLI and checked-in freshness report.
 - Added schema fields for learner questions that remain unanswered or insufficiently sourced.
 - Added misconception evidence objects with source IDs, severity, and teacher/reviewer response.
 - Added a negative fixture for a card that has learner questions without misconception evidence.
 - Expanded the markdown renderer with learner-question and misconception-evidence sections.
 - Added a public-domain folder-based learning dossier example with mission, source/reference sheet, question map, practice task, evidence checklist, and review gate metadata.
+- Hardened card-level learner-question and misconception-evidence source bindings, including duplicate source IDs, malformed status/source combinations, and undeclared source references.
+- Added invalid fixtures for source-bound learner questions without source IDs and misconception evidence with undeclared source IDs.
+- Added a deterministic review-boundary report CLI with checked-in JSON freshness checks for packet, dossier, review-gate, and card human-review states.
+- Added packet, dossier mission, and dossier review-gate negative fixtures for promoted review states.
+- Added renderer fail-closed review-boundary handling so promoted or invalid fixtures exit with labeled `render_boundary=failed` output before markdown writes.
+- Added checked-in review-boundary JSON reports for the review-packet and minimal fixtures, with unittest freshness checks.

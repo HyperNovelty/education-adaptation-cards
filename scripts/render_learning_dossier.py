@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from json import JSONDecodeError
 import sys
 from pathlib import Path
 from typing import Any
@@ -11,11 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from education_adaptation_cards import CARD_RENDER_ORDER, load_json, validate_doc
-
-
-def card_sort_key(card: dict[str, Any]) -> tuple[int, str]:
-    return (CARD_RENDER_ORDER.index(card["card_type"]), card["card_id"])
+from education_adaptation_cards import card_sort_key, load_json, validate_doc
+from scripts.report_review_boundaries import report_review_boundaries
 
 
 def render_bullets(items: list[str]) -> list[str]:
@@ -229,6 +227,48 @@ def render_dossier(doc: dict[str, Any], source_path: Path) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+def boundary_failure_line(source_path: Path, reason: str, detail: str) -> str:
+    return f"render_boundary=failed input={source_path} reason={reason} detail={detail}"
+
+
+def review_boundary_failure_line(source_path: Path, doc: dict[str, Any]) -> str | None:
+    report = report_review_boundaries(doc, source_path)
+    violations = [item for item in report["items"] if item["result"] == "violation"]
+    if not violations:
+        return None
+    violation = violations[0]
+    return (
+        f"render_boundary=failed input={source_path} reason=review_boundary_violation "
+        f"layer={violation['label']} location={violation['location']} "
+        f"status={violation['observed_status']!r} allowed={','.join(violation['allowed_statuses'])}"
+    )
+
+
+def load_valid_renderable_doc(source_path: Path) -> dict[str, Any] | None:
+    try:
+        doc = load_json(source_path)
+    except (OSError, JSONDecodeError) as exc:
+        print(boundary_failure_line(source_path, "json_load_failed", str(exc)), file=sys.stderr)
+        return None
+    if not isinstance(doc, dict):
+        print(
+            boundary_failure_line(source_path, "top_level_json_not_object", "top-level JSON must be object"),
+            file=sys.stderr,
+        )
+        return None
+
+    try:
+        validate_doc(doc, source_path.name)
+    except AssertionError as exc:
+        boundary_failure = review_boundary_failure_line(source_path, doc)
+        if boundary_failure:
+            print(boundary_failure, file=sys.stderr)
+        else:
+            print(boundary_failure_line(source_path, "validation_failed", str(exc)), file=sys.stderr)
+        return None
+    return doc
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("fixture", nargs="?", type=Path, help="Path to an education adaptation card JSON fixture")
@@ -247,7 +287,9 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     fixture = (args.input_path or args.fixture).resolve()
-    doc = load_json(fixture)
+    doc = load_valid_renderable_doc(fixture)
+    if doc is None:
+        return 1
     rendered = render_dossier(doc, fixture)
     if args.check:
         target = args.check

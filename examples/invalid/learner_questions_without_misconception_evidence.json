@@ -47,7 +47,7 @@
           "question_id": "question_without_evidence",
           "question_text": "Which claim needs a clearer source check?",
           "question_status": "unanswered",
-          "source_ids": ["S001"],
+          "source_ids": [],
           "reviewer_note": "This question intentionally lacks required misconception evidence."
         }
       ]
