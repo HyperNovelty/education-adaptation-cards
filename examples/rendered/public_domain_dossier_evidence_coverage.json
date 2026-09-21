@@ -1,0 +1,83 @@
+{
+  "report_type": "education_adaptation_cards.dossier_evidence_coverage",
+  "report_version": "1.0",
+  "source_path": "examples/education_cards.public_domain_folder_dossier.json",
+  "packet_id": "alice_public_domain_folder_dossier",
+  "dossier_id": "alice_source_check_folder",
+  "boundary_statement": "Structural coverage does not mean approval, grading, classroom readiness, or deployment permission.",
+  "declared_source_ids": [
+    "PD001"
+  ],
+  "question_sources": [
+    {
+      "question_id": "question_observable_setting",
+      "source_ids": [
+        "PD001"
+      ]
+    },
+    {
+      "question_id": "question_claim_boundary",
+      "source_ids": [
+        "PD001"
+      ]
+    }
+  ],
+  "practice_task": {
+    "task_id": "task_claim_evidence_table",
+    "source_ids": [
+      "PD001"
+    ],
+    "evidence_output_ids": [
+      "evidence_source_id_present",
+      "evidence_boundary_label_present"
+    ]
+  },
+  "evidence_checklist": [
+    {
+      "evidence_id": "evidence_source_id_present",
+      "source_ids": [
+        "PD001"
+      ]
+    },
+    {
+      "evidence_id": "evidence_boundary_label_present",
+      "source_ids": [
+        "PD001"
+      ]
+    }
+  ],
+  "review_gate": {
+    "gate_id": "gate_folder_evidence_review",
+    "status": "needs_human_review",
+    "required_roles": [
+      "teacher",
+      "curriculum_reviewer"
+    ],
+    "evidence_required_ids": [
+      "evidence_source_id_present",
+      "evidence_boundary_label_present"
+    ]
+  },
+  "coverage": {
+    "missing_source_references": [],
+    "unknown_source_references": [],
+    "missing_evidence_references": [],
+    "unknown_evidence_references": [],
+    "unreferenced_declared_source_ids": [],
+    "uncovered_evidence_checklist_ids": []
+  },
+  "counts": {
+    "declared_sources": 1,
+    "questions": 2,
+    "practice_tasks": 1,
+    "practice_task_evidence_outputs": 2,
+    "evidence_checklist_items": 2,
+    "review_gate_required_evidence": 2,
+    "missing_source_references": 0,
+    "unknown_source_references": 0,
+    "missing_evidence_references": 0,
+    "unknown_evidence_references": 0,
+    "unreferenced_declared_source_ids": 0,
+    "uncovered_evidence_checklist_ids": 0
+  }
+}

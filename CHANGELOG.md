@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-21
+
+- Added `scripts/report_dossier_evidence_coverage.py`, a stdlib CLI that inventories public-domain learning-dossier source and evidence links without approval, grading, classroom-readiness, or deployment claims.
+- Added a checked-in deterministic public-domain evidence-coverage report and unittest coverage for freshness checks, invalid input, validation failures, stale check non-mutation, and path/authority wording boundaries.
+
 ## 2026-09-01
 
 - Added a validator-level forbidden future-authority field scan that fails before generic key checks for learner identity, student records, LMS fields, classroom deployment, gradebook writes, automated grading, and auto-publish.

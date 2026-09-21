@@ -22,6 +22,7 @@ Fixtures:
 - `examples/education_cards.public_domain_folder_dossier.json` — complete folder-based dossier using a pre-1929 public-domain text source.
 - `examples/education_cards.review_packet_fixture.json` — fuller mock attachment targeting the existing Voice-to-Source review packet fixture.
 - `examples/rendered/public_domain_review_boundaries.json` — deterministic JSON report generated from the public-domain fixture for freshness checks.
+- `examples/rendered/public_domain_dossier_evidence_coverage.json` — deterministic JSON report inventorying public-domain dossier source/evidence links for freshness checks.
 - `examples/rendered/review_packet_review_boundaries.json` — deterministic JSON report generated from the review-packet fixture.
 - `examples/rendered/minimal_review_boundaries.json` — deterministic JSON report generated from the minimal fixture.
 - `examples/rendered/forbidden_authority_fields.json` — deterministic JSON inventory of forbidden future-authority field names and reasons.
@@ -154,6 +155,20 @@ Validation links `question_map`, `practice_task`, `evidence_checklist`, and `rev
 
 Boundary: this does **not** authorize LMS integration, student data collection, grading, account actions, classroom deployment, or public education claims. It is a local review-packet pattern until separately approved.
 
+## Dossier evidence-coverage report
+
+Run from the repository root:
+
+```bash
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json --format json
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_dossier_evidence_coverage.json
+```
+
+The report inventories declared dossier source IDs, question source IDs, practice-task source and evidence-output IDs, evidence-checklist source IDs, and the review gate's status, required roles, and evidence IDs. It compares checked-in JSON bytes without writing in `--check` mode. Malformed JSON, non-object JSON, validation failure, missing `learning_dossier`, stale checked-in JSON, or incomplete source/evidence coverage exits nonzero with a labeled error.
+
+The report is structural only. Its explicit boundary statement says structural coverage does not mean approval, grading, classroom readiness, or deployment permission.
+
 ## Local verification
 
 Run from the repository root:
@@ -165,6 +180,7 @@ python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/e
 python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json >/tmp/education_cards.public_domain_folder_dossier.validated.json
 python3 -m unittest discover -s tests -p 'test_*.py'
 python3 tests/validate_education_adaptation_cards.py
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_dossier_evidence_coverage.json
 python3 scripts/report_forbidden_authority_fields.py --check examples/rendered/forbidden_authority_fields.json
 ```
 

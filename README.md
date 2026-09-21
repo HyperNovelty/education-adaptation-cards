@@ -12,6 +12,7 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `examples/education_cards.review_packet_fixture.json` — fuller fixture referencing the existing Voice-to-Source review packet output.
 - `examples/rendered/education_demo_dossier.md` — generated markdown demo from the review packet fixture.
 - `examples/rendered/public_domain_learning_dossier.md` — generated markdown demo from the public-domain folder dossier fixture.
+- `examples/rendered/public_domain_dossier_evidence_coverage.json` — checked-in deterministic source/evidence coverage report for the public-domain folder dossier.
 - `examples/rendered/public_domain_review_boundaries.json` — checked-in deterministic review-boundary report for the public-domain folder dossier.
 - `examples/rendered/review_packet_review_boundaries.json` — checked-in deterministic review-boundary report for the review-packet fixture.
 - `examples/rendered/minimal_review_boundaries.json` — checked-in deterministic review-boundary report for the minimal fixture.
@@ -32,6 +33,7 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `docs/DEMO_WALKTHROUGH.md` — plain-language reviewer walkthrough.
 - `tests/validate_education_adaptation_cards.py` — Python standard-library validator; no third-party installs.
 - `scripts/report_forbidden_authority_fields.py` — deterministic stdlib CLI that inventories and scans forbidden future-authority fields.
+- `scripts/report_dossier_evidence_coverage.py` — deterministic stdlib CLI that inventories learning-dossier source and evidence links without approval claims.
 - `scripts/report_review_boundaries.py` — deterministic stdlib CLI that inventories packet, dossier, and card review states.
 - `scripts/render_learning_dossier.py` — deterministic stdlib renderer for local markdown learning dossiers/review packets.
 
@@ -53,6 +55,8 @@ Learner questions and misconception evidence are synthetic, source-bound review 
 
 ```bash
 python3 tests/validate_education_adaptation_cards.py
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_dossier_evidence_coverage.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
@@ -74,6 +78,7 @@ python3 -m json.tool examples/education_cards.review_packet_fixture.json >/tmp/e
 python3 -m json.tool examples/education_cards.public_domain_folder_dossier.json >/tmp/education_cards.public_domain_folder_dossier.validated.json
 python3 tests/validate_education_adaptation_cards.py
 python3 -m unittest discover -s tests -p 'test_*.py'
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_dossier_evidence_coverage.json
 python3 scripts/report_forbidden_authority_fields.py --check examples/rendered/forbidden_authority_fields.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
@@ -91,6 +96,9 @@ python3 tests/validate_education_adaptation_cards.py
 python3 scripts/report_forbidden_authority_fields.py
 python3 scripts/report_forbidden_authority_fields.py --input examples/education_cards.minimal.json
 python3 scripts/report_forbidden_authority_fields.py --check examples/rendered/forbidden_authority_fields.json
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json --format json
+python3 scripts/report_dossier_evidence_coverage.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_dossier_evidence_coverage.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --format json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json

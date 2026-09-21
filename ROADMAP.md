@@ -18,6 +18,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 
 ## Recently completed
 
+- Added a deterministic dossier evidence-coverage report CLI and checked-in public-domain freshness report for source/evidence link inspection.
 - Added a named forbidden future-authority field gate for learner identity, student records, LMS fields, classroom deployment, gradebook writes, automated grading, and auto-publish.
 - Added public-safe invalid fixtures for `review_packet.student_id`, card `lms_export`, dossier `classroom_deployment`, and assessment-gate `gradebook_write`.
 - Added a deterministic forbidden-authority inventory CLI and checked-in freshness report.
