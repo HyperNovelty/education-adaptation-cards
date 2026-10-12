@@ -18,6 +18,10 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `examples/rendered/minimal_review_boundaries.json` — checked-in deterministic review-boundary report for the minimal fixture.
 - `examples/rendered/forbidden_authority_fields.json` — checked-in deterministic inventory of named future-authority fields that fail closed.
 - `examples/invalid/assessment_gate_gradebook_write.json` — negative fixture proving assessment gates cannot add gradebook-write authority.
+- `examples/invalid/assessment_gate_proctoring_recording.json` — negative fixture proving assessment gates cannot collect proctoring recordings.
+- `examples/invalid/card_behavior_score.json` — negative fixture proving cards cannot score learner behavior.
+- `examples/invalid/card_biometric_data.json` — negative fixture proving cards cannot collect learner biometric data.
+- `examples/invalid/card_emotion_inference.json` — negative fixture proving cards cannot infer learner emotions.
 - `examples/invalid/card_lms_export.json` — negative fixture proving cards cannot add LMS export authority.
 - `examples/invalid/dossier_classroom_deployment.json` — negative fixture proving dossiers cannot add classroom deployment authority.
 - `examples/invalid/dossier_learning_mission_review_state_approved.json` — negative fixture proving dossier mission review state cannot move beyond local review.
@@ -27,6 +31,7 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `examples/invalid/learner_question_source_bound_without_source_ids.json` — negative fixture proving source-bound learner questions must name source IDs.
 - `examples/invalid/learner_questions_without_misconception_evidence.json` — negative fixture proving learner questions require misconception evidence.
 - `examples/invalid/misconception_evidence_undeclared_source_id.json` — negative fixture proving misconception evidence source IDs must be declared by the card.
+- `examples/invalid/packet_family_contact.json` — negative fixture proving review packets cannot collect family contact data.
 - `examples/invalid/packet_status_approved_internal_review.json` — negative fixture proving packet status cannot move beyond local review.
 - `examples/invalid/packet_student_id.json` — negative fixture proving review packets cannot collect learner identity.
 - `docs/education_adaptation_cards_contract.md` — implementation notes and review-packet integration guidance.
@@ -43,13 +48,13 @@ This prototype is local review material only. It does not publish, contact anyon
 
 The only allowed review authority states in runnable local fixtures are `draft_only` and `needs_human_review`. Packet status, dossier mission review state, dossier review gate status, and every card `human_review.status` fail closed if promoted beyond that boundary.
 
-Named future-authority fields fail before generic key-mismatch checks. Fields for learner identity, student records, LMS export/sync/course IDs, classroom deployment, gradebook writes, automated grading, and auto-publish produce `forbidden_future_authority_field=<field>` with a specific reason.
+Named future-authority fields fail before generic key-mismatch checks. Fields for learner identity, student records, family contact data, biometric data, emotion inference, proctoring recordings, behavior scoring, LMS export/sync/course IDs, classroom deployment, gradebook writes, automated grading, and auto-publish produce `forbidden_future_authority_field=<field>` with a specific reason.
 
 The markdown renderer also fails closed before writing output: malformed JSON, non-object JSON, validation failures, and promoted review states exit nonzero with a labeled `render_boundary=failed` line. Successful renders do not add banners or extra sections beyond the deterministic dossier markdown.
 
 Assessment artifacts are review aids, not grading automation, diagnosis, or student surveillance; see `docs/ASSESSMENT_BOUNDARY.md`.
 
-Learner questions and misconception evidence are synthetic, source-bound review objects. Question and evidence source IDs must be unique and declared in the card's source binding. They are not student records, learner profiles, grading inputs, or classroom-clearance claims.
+Learner questions and misconception evidence are synthetic, source-bound review objects. Question and evidence source IDs must be unique and declared in the card's source binding. They are not student records, family records, biometric records, emotion inferences, proctoring records, learner profiles, behavior scores, grading inputs, or classroom-clearance claims.
 
 ## Try it in 2 minutes
 

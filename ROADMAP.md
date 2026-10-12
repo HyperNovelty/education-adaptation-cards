@@ -5,7 +5,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 ## Near-term maintainer work
 
 - Keep renderer and report regression fixtures fresh for every valid review-state surface.
-- Keep the project local/reference-only: no student data, no LMS integration, no classroom deployment, and no account actions.
+- Keep the project local/reference-only: no student or family data, no biometric collection, no emotion inference, no proctoring recordings, no behavior scoring, no LMS integration, no classroom deployment, and no account actions.
 
 ## Program fit
 
@@ -19,6 +19,8 @@ This repository explores the idea that the next classroom may be a folder: a dur
 ## Recently completed
 
 - Added a deterministic dossier evidence-coverage report CLI and checked-in public-domain freshness report for source/evidence link inspection.
+- Extended the forbidden future-authority field gate for biometric data, emotion inference, proctoring recordings, learner behavior scores, and family contact data.
+- Added public-safe invalid fixtures proving those sensitive learner-data fields fail closed before generic key checks.
 - Added a named forbidden future-authority field gate for learner identity, student records, LMS fields, classroom deployment, gradebook writes, automated grading, and auto-publish.
 - Added public-safe invalid fixtures for `review_packet.student_id`, card `lms_export`, dossier `classroom_deployment`, and assessment-gate `gradebook_write`.
 - Added a deterministic forbidden-authority inventory CLI and checked-in freshness report.

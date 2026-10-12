@@ -13,6 +13,10 @@ from education_adaptation_cards import EXAMPLES, INVALID_EXAMPLES, SCHEMA, expec
 
 EXPECTED_INVALID_FAILURES = {
     "assessment_gate_gradebook_write.json": "forbidden_future_authority_field=gradebook_write",
+    "assessment_gate_proctoring_recording.json": "forbidden_future_authority_field=proctoring_recording",
+    "card_behavior_score.json": "forbidden_future_authority_field=behavior_score",
+    "card_biometric_data.json": "forbidden_future_authority_field=biometric_data",
+    "card_emotion_inference.json": "forbidden_future_authority_field=emotion_inference",
     "card_lms_export.json": "forbidden_future_authority_field=lms_export",
     "dossier_classroom_deployment.json": "forbidden_future_authority_field=classroom_deployment",
     "dossier_learning_mission_review_state_approved.json": "learning_mission.review_state must remain local-review-only",
@@ -28,6 +32,7 @@ EXPECTED_INVALID_FAILURES = {
         "misconception_evidence[0].source_ids undeclared source_id: S999"
     ),
     "packet_status_approved_internal_review.json": "review_packet.packet_status must remain local-review-only",
+    "packet_family_contact.json": "forbidden_future_authority_field=family_contact",
     "packet_student_id.json": "forbidden_future_authority_field=student_id",
 }
 

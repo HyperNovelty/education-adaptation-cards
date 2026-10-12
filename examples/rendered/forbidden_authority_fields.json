@@ -10,12 +10,28 @@
       "reason": "must not add auto-publish authority"
     },
     {
+      "field": "behavior_score",
+      "reason": "must not score learner behavior"
+    },
+    {
+      "field": "biometric_data",
+      "reason": "must not collect learner biometric data"
+    },
+    {
       "field": "classroom_deployment",
       "reason": "must not add classroom deployment authority"
     },
     {
       "field": "classroom_deployment_status",
       "reason": "must not add classroom deployment authority"
+    },
+    {
+      "field": "emotion_inference",
+      "reason": "must not infer learner emotions"
+    },
+    {
+      "field": "family_contact",
+      "reason": "must not collect family contact data"
     },
     {
       "field": "gradebook_write",
@@ -36,6 +52,10 @@
     {
       "field": "lms_sync",
       "reason": "must not add LMS authority"
+    },
+    {
+      "field": "proctoring_recording",
+      "reason": "must not collect proctoring recordings"
     },
     {
       "field": "student_id",

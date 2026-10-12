@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-12
+
+- Extended the validator-level forbidden future-authority field scan for `biometric_data`, `emotion_inference`, `proctoring_recording`, `behavior_score`, and `family_contact`, each with a specific fail-closed reason before generic key checks.
+- Added public-safe synthetic invalid fixtures and regression coverage proving exact locations, exact reasons, recursive scanning, and renderer fail-closed behavior without supporting real learner/family data or surveillance.
+- Regenerated the deterministic forbidden-authority inventory at `examples/rendered/forbidden_authority_fields.json`.
+
 ## 2026-09-21
 
 - Added `scripts/report_dossier_evidence_coverage.py`, a stdlib CLI that inventories public-domain learning-dossier source and evidence links without approval, grading, classroom-readiness, or deployment claims.

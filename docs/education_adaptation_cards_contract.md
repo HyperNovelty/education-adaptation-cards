@@ -6,9 +6,9 @@ Local-only implementation-facing mock contract for adding education adaptation c
 
 - Work stays inside this repository checkout.
 - Artifacts are review-packet attachments, not classroom deployment artifacts.
-- No network calls, third-party package installs, public publishing, LMS/account actions, credentials, outreach, or student data handling.
+- No network calls, third-party package installs, public publishing, LMS/account actions, credentials, outreach, learner/family data handling, biometric collection, emotion inference, proctoring recording, or learner behavior scoring.
 - Packet, dossier, review-gate, and card human-review states remain `draft_only` or `needs_human_review`. This repository does not promote, approve, publish, or clear artifacts for classroom use.
-- Named future-authority fields for learner identity, student records, LMS actions, classroom deployment, gradebook writes, automated grading, and auto-publish fail closed before generic object-key validation.
+- Named future-authority fields for learner identity, student records, family contact data, biometric data, emotion inference, proctoring recordings, behavior scoring, LMS actions, classroom deployment, gradebook writes, automated grading, and auto-publish fail closed before generic object-key validation.
 
 ## Primary artifact
 
@@ -114,7 +114,7 @@ python3 scripts/report_forbidden_authority_fields.py --input examples/education_
 python3 scripts/report_forbidden_authority_fields.py --check examples/rendered/forbidden_authority_fields.json
 ```
 
-The validator recursively scans JSON objects before exact-key and additional-property checks. If a named future-authority key appears anywhere, validation fails with `forbidden_future_authority_field=<field>` and the field's reason. Current named prohibitions cover learner identity, student records, LMS export/sync/course IDs, classroom deployment/status, gradebook writes, automated grading, and auto-publish. The CLI inventories those names, checks the checked-in inventory without writing it, and can scan one fixture read-only.
+The validator recursively scans JSON objects before exact-key and additional-property checks. If a named future-authority key appears anywhere, validation fails with `forbidden_future_authority_field=<field>` and the field's reason. Current named prohibitions cover learner identity, student records, family contact data, learner biometric data, learner emotion inference, proctoring recordings, learner behavior scoring, LMS export/sync/course IDs, classroom deployment/status, gradebook writes, automated grading, and auto-publish. The CLI inventories those names, checks the checked-in inventory without writing it, and can scan one fixture read-only.
 
 ## Renderer fail-closed boundary
 
