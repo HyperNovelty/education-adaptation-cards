@@ -52,6 +52,22 @@ student records, LMS fields, classroom deployment, gradebook writes, automated
 grading, and auto-publish. If a fixture includes one, validation fails with
 `forbidden_future_authority_field=<field>` before generic key validation.
 
+## Review Learner-Inquiry Status
+
+Run the deterministic reviewer report and all three freshness checks:
+
+```bash
+python3 scripts/report_learner_inquiry_status.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_learner_inquiry_status.json
+python3 scripts/report_learner_inquiry_status.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_learner_inquiry_status.json
+python3 scripts/report_learner_inquiry_status.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learner_inquiry_status.json
+```
+
+The report preserves card, question, and misconception order while showing
+question status/source IDs, misconception severity/source IDs, teacher
+responses, reviewer notes, aggregate counts, and attention items. Attention
+items request human inspection only; they are never scores, grades, diagnoses,
+profiles, readiness claims, approvals, or deployment authorization.
+
 ## What the Validator Checks
 
 Run:

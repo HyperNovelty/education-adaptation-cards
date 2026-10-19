@@ -1,0 +1,65 @@
+{
+  "report_type": "education_adaptation_cards.learner_inquiry_status",
+  "report_version": "1.0",
+  "source_path": "examples/education_cards.public_domain_folder_dossier.json",
+  "packet_id": "alice_public_domain_folder_dossier",
+  "boundary_statement": "This is a local reviewer decision surface only; attention items require human inspection and are not scores, grades, diagnoses, profiles, readiness claims, approvals, or deployment authorization.",
+  "cards": [
+    {
+      "card_id": "teacher_card_alice_source_folder",
+      "card_type": "teacher_card",
+      "learner_questions": [],
+      "misconception_evidence": []
+    },
+    {
+      "card_id": "student_card_alice_source_check",
+      "card_type": "student_card",
+      "learner_questions": [
+        {
+          "question_id": "question_alice_supported_claim",
+          "question_status": "source_bound",
+          "source_ids": [
+            "PD001"
+          ],
+          "reviewer_note": "Synthetic question for local review; no answer or identity is stored."
+        }
+      ],
+      "misconception_evidence": [
+        {
+          "misconception_id": "misconception_inference_as_fact",
+          "severity": "medium",
+          "source_ids": [
+            "PD001"
+          ],
+          "teacher_response": "Ask for the exact source phrase next to direct observations and require inference labels elsewhere.",
+          "reviewer_note": "Synthetic planning evidence only; not a record about a real learner."
+        }
+      ]
+    },
+    {
+      "card_id": "assessment_gate_card_alice_folder",
+      "card_type": "assessment_gate_card",
+      "learner_questions": [],
+      "misconception_evidence": []
+    }
+  ],
+  "attention_items": [],
+  "counts": {
+    "cards": 3,
+    "learner_questions": 1,
+    "misconception_evidence": 1,
+    "attention_items": 0,
+    "questions_by_status": {
+      "unanswered": 0,
+      "partially_sourced": 0,
+      "source_bound": 1,
+      "out_of_scope": 0
+    },
+    "misconceptions_by_severity": {
+      "low": 0,
+      "medium": 1,
+      "high": 0,
+      "unknown": 0
+    }
+  }
+}

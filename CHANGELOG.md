@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-19
+
+- Added `scripts/report_learner_inquiry_status.py` and deterministic freshness reports for all three valid fixtures. The report inventories learner-question status/source bindings and misconception evidence for human inspection only; attention items do not score, grade, diagnose, profile, claim readiness, approve use, or authorize deployment.
+
 ## 2026-10-12
 
 - Extended the validator-level forbidden future-authority field scan for `biometric_data`, `emotion_inference`, `proctoring_recording`, `behavior_score`, and `family_contact`, each with a specific fail-closed reason before generic key checks.

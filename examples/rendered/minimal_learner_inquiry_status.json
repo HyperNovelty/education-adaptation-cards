@@ -1,0 +1,72 @@
+{
+  "report_type": "education_adaptation_cards.learner_inquiry_status",
+  "report_version": "1.0",
+  "source_path": "examples/education_cards.minimal.json",
+  "packet_id": "synthetic_review_packet_minimal",
+  "boundary_statement": "This is a local reviewer decision surface only; attention items require human inspection and are not scores, grades, diagnoses, profiles, readiness claims, approvals, or deployment authorization.",
+  "cards": [
+    {
+      "card_id": "teacher_card_minimal",
+      "card_type": "teacher_card",
+      "learner_questions": [],
+      "misconception_evidence": []
+    },
+    {
+      "card_id": "student_card_minimal",
+      "card_type": "student_card",
+      "learner_questions": [
+        {
+          "question_id": "question_source_confidence",
+          "question_status": "partially_sourced",
+          "source_ids": [
+            "S001"
+          ],
+          "reviewer_note": "Synthetic local-review question; no learner response or identity is recorded."
+        }
+      ],
+      "misconception_evidence": [
+        {
+          "misconception_id": "misconception_draft_as_fact",
+          "severity": "medium",
+          "source_ids": [
+            "S001"
+          ],
+          "teacher_response": "Have the teacher mark draft claims as unresolved and ask for source checks before discussion.",
+          "reviewer_note": "Evidence is synthetic and source-bound; it is not an evaluation or student record."
+        }
+      ]
+    },
+    {
+      "card_id": "assessment_gate_card_minimal",
+      "card_type": "assessment_gate_card",
+      "learner_questions": [],
+      "misconception_evidence": []
+    }
+  ],
+  "attention_items": [
+    {
+      "kind": "learner_question",
+      "id": "question_source_confidence",
+      "reason": "partially_sourced",
+      "location": "card:student_card_minimal.learner_questions[0]"
+    }
+  ],
+  "counts": {
+    "cards": 3,
+    "learner_questions": 1,
+    "misconception_evidence": 1,
+    "attention_items": 1,
+    "questions_by_status": {
+      "unanswered": 0,
+      "partially_sourced": 1,
+      "source_bound": 0,
+      "out_of_scope": 0
+    },
+    "misconceptions_by_severity": {
+      "low": 0,
+      "medium": 1,
+      "high": 0,
+      "unknown": 0
+    }
+  }
+}

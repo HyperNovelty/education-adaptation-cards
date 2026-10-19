@@ -40,6 +40,8 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `scripts/report_forbidden_authority_fields.py` — deterministic stdlib CLI that inventories and scans forbidden future-authority fields.
 - `scripts/report_dossier_evidence_coverage.py` — deterministic stdlib CLI that inventories learning-dossier source and evidence links without approval claims.
 - `scripts/report_review_boundaries.py` — deterministic stdlib CLI that inventories packet, dossier, and card review states.
+- `scripts/report_learner_inquiry_status.py` — deterministic stdlib CLI that inventories learner-question status/source bindings and misconception evidence for human inspection only.
+- `examples/rendered/minimal_learner_inquiry_status.json`, `examples/rendered/review_packet_learner_inquiry_status.json`, and `examples/rendered/public_domain_learner_inquiry_status.json` — checked-in freshness reports for all valid fixtures.
 - `scripts/render_learning_dossier.py` — deterministic stdlib renderer for local markdown learning dossiers/review packets.
 
 ## Safety boundary
@@ -56,6 +58,8 @@ Assessment artifacts are review aids, not grading automation, diagnosis, or stud
 
 Learner questions and misconception evidence are synthetic, source-bound review objects. Question and evidence source IDs must be unique and declared in the card's source binding. They are not student records, family records, biometric records, emotion inferences, proctoring records, learner profiles, behavior scores, grading inputs, or classroom-clearance claims.
 
+The learner-inquiry status report is a reviewer decision surface only. Its attention items mean human inspection is needed; they never score, grade, diagnose, profile, claim learner or classroom readiness, approve use, or authorize deployment.
+
 ## Try it in 2 minutes
 
 ```bash
@@ -66,6 +70,9 @@ python3 scripts/report_review_boundaries.py --input examples/education_cards.pub
 python3 scripts/report_review_boundaries.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_review_boundaries.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_review_boundaries.json
+python3 scripts/report_learner_inquiry_status.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_learner_inquiry_status.json
+python3 scripts/report_learner_inquiry_status.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_learner_inquiry_status.json
+python3 scripts/report_learner_inquiry_status.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learner_inquiry_status.json
 python3 scripts/report_forbidden_authority_fields.py --check examples/rendered/forbidden_authority_fields.json
 python3 scripts/render_learning_dossier.py --input examples/education_cards.review_packet_fixture.json --output /tmp/education_demo_dossier.md
 python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --output /tmp/public_domain_learning_dossier.md
