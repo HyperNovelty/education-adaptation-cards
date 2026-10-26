@@ -120,6 +120,19 @@ A public-domain folder demo render is available at
 `examples/rendered/public_domain_learning_dossier.md`. It is generated from
 `examples/education_cards.public_domain_folder_dossier.json`.
 
+For a Windows-openable packet, open
+`examples/rendered/public_domain_learning_dossier.html` locally and check its
+freshness with:
+
+```bash
+python3 scripts/render_learning_dossier_html.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.html
+```
+
+The HTML packet includes packet metadata, the local-review-only boundary, all
+six dossier sections, and all three cards with source IDs and review
+statuses/roles. It has no JavaScript, forms, network calls, external assets,
+or clickable source URL.
+
 ## How to Review in 90 Seconds
 
 1. Open the fixture and confirm it is synthetic and `local_review_only`.
@@ -135,6 +148,8 @@ A public-domain folder demo render is available at
    authorized.
 7. Optionally run an invalid fixture through the renderer and confirm it reports
    `render_boundary=failed` without writing markdown.
+8. Open the HTML packet locally and confirm the exact check above prints
+   `html_render_check=ok`.
 
 That is the whole demo: a small fixture contract, a local validator, a
 review-boundary inventory, a forbidden-authority inventory, and a deterministic

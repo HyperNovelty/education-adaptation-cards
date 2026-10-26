@@ -5,6 +5,7 @@ This repository explores the idea that the next classroom may be a folder: a dur
 ## Near-term maintainer work
 
 - Keep renderer and report regression fixtures fresh for every valid review-state surface.
+- Keep `examples/rendered/public_domain_learning_dossier.html` fresh with the exact offline HTML check command in the README; it is a local reviewer surface, not a classroom-readiness or deployment artifact.
 - Keep the learner-inquiry status report and its three checked-in freshness artifacts fresh; it is a human-review surface, not learner scoring, diagnosis, readiness, approval, or deployment authority.
 - Keep the project local/reference-only: no student or family data, no biometric collection, no emotion inference, no proctoring recordings, no behavior scoring, no LMS integration, no classroom deployment, and no account actions.
 
@@ -18,6 +19,8 @@ This repository explores the idea that the next classroom may be a folder: a dur
 - Add more invalid examples for future local-only surfaces as new field names are proposed, before any renderer support is added.
 
 ## Recently completed
+
+- Added a deterministic, self-contained offline HTML review packet for the public-domain folder dossier, with fail-closed validation, escaping, freshness checks, and focused regression coverage.
 
 - Added a deterministic learner-inquiry status report CLI with minimal, review-packet, and public-domain freshness artifacts and explicit non-authority attention semantics.
 

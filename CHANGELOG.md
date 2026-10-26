@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-26
+
+- Added a deterministic, self-contained Windows-openable HTML review packet for the public-domain learning dossier, with fail-closed validation, offline boundaries, and focused tests. It remains local review material only.
+
 ## 2026-10-19
 
 - Added `scripts/report_learner_inquiry_status.py` and deterministic freshness reports for all three valid fixtures. The report inventories learner-question status/source bindings and misconception evidence for human inspection only; attention items do not score, grade, diagnose, profile, claim readiness, approve use, or authorize deployment.

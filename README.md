@@ -12,6 +12,7 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `examples/education_cards.review_packet_fixture.json` — fuller fixture referencing the existing Voice-to-Source review packet output.
 - `examples/rendered/education_demo_dossier.md` — generated markdown demo from the review packet fixture.
 - `examples/rendered/public_domain_learning_dossier.md` — generated markdown demo from the public-domain folder dossier fixture.
+- `examples/rendered/public_domain_learning_dossier.html` — generated self-contained offline HTML review packet for local browser inspection.
 - `examples/rendered/public_domain_dossier_evidence_coverage.json` — checked-in deterministic source/evidence coverage report for the public-domain folder dossier.
 - `examples/rendered/public_domain_review_boundaries.json` — checked-in deterministic review-boundary report for the public-domain folder dossier.
 - `examples/rendered/review_packet_review_boundaries.json` — checked-in deterministic review-boundary report for the review-packet fixture.
@@ -43,6 +44,7 @@ JSON schema and fixtures for AI-era education adaptation cards: source-bound lea
 - `scripts/report_learner_inquiry_status.py` — deterministic stdlib CLI that inventories learner-question status/source bindings and misconception evidence for human inspection only.
 - `examples/rendered/minimal_learner_inquiry_status.json`, `examples/rendered/review_packet_learner_inquiry_status.json`, and `examples/rendered/public_domain_learner_inquiry_status.json` — checked-in freshness reports for all valid fixtures.
 - `scripts/render_learning_dossier.py` — deterministic stdlib renderer for local markdown learning dossiers/review packets.
+- `scripts/render_learning_dossier_html.py` — deterministic stdlib renderer for the offline HTML dossier packet.
 
 ## Safety boundary
 
@@ -96,6 +98,7 @@ python3 scripts/report_review_boundaries.py --input examples/education_cards.pub
 python3 scripts/report_review_boundaries.py --input examples/education_cards.review_packet_fixture.json --check examples/rendered/review_packet_review_boundaries.json
 python3 scripts/report_review_boundaries.py --input examples/education_cards.minimal.json --check examples/rendered/minimal_review_boundaries.json
 python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.md
+python3 scripts/render_learning_dossier_html.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.html
 ```
 
 
@@ -119,5 +122,6 @@ python3 scripts/report_review_boundaries.py --input examples/education_cards.min
 python3 scripts/render_learning_dossier.py examples/education_cards.review_packet_fixture.json
 python3 scripts/render_learning_dossier.py examples/education_cards.public_domain_folder_dossier.json
 python3 scripts/render_learning_dossier.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.md
+python3 scripts/render_learning_dossier_html.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.html
 python3 tests/test_render_learning_dossier_smoke.py
 ```

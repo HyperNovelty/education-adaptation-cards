@@ -127,6 +127,20 @@ python3 scripts/render_learning_dossier.py --input examples/invalid/packet_statu
 
 The renderer validates before writing or checking markdown. Malformed JSON, non-object JSON, validation failures, forbidden future-authority fields, and promoted packet/dossier/card review states exit nonzero with `render_boundary=failed`. Promoted states are labeled with the same review-boundary inventory labels used by `scripts/report_review_boundaries.py`; other validation failures keep the validator's reason.
 
+The companion HTML renderer is the Windows/local-browser review surface:
+
+```bash
+python3 scripts/render_learning_dossier_html.py --input examples/education_cards.public_domain_folder_dossier.json --check examples/rendered/public_domain_learning_dossier.html
+```
+
+It requires `learning_dossier`, validates before producing or checking output,
+and fails closed without mutating a target on malformed, non-object, invalid,
+missing-dossier, or promoted-review input. The generated packet is byte-stable,
+stdlib-only, and self-contained: fixture strings are escaped, source URLs are
+plain text, and there are no scripts, forms, external resources, or network
+calls. It is a review aid and does not claim approval, grading, readiness, or
+deployment authority.
+
 ## Learning dossier extension
 
 Added 2026-06-09 after Jordan approved the **Future of Education** monitoring/development track and the angle **The Next Classroom May Be a Folder**.
